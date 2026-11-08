@@ -24,10 +24,11 @@ test("open redirects are blocked", () => {
 });
 
 test("production guard: inline SMS with a real payment provider is refused", () => {
-  const ok = { NODE_ENV: "production", SMS_PROVIDER: "inline", PAYMENT_PROVIDER: "fake", AUTH_SECRET: "x".repeat(40), DATABASE_HOST: "h", DATABASE_NAME: "d" };
+  const ok = { NODE_ENV: "production", SMS_PROVIDER: "inline", PAYMENT_PROVIDER: "fake", ALLOW_FAKE_PAYMENTS: "1", AUTH_SECRET: "x".repeat(40), DATABASE_HOST: "h", DATABASE_NAME: "d" };
   assert.deepEqual(configProblems(ok), []);
   assert.equal(configProblems({ ...ok, PAYMENT_PROVIDER: "zarinpal" }).length, 1);
   assert.equal(configProblems({ ...ok, SMS_PROVIDER: undefined, PAYMENT_PROVIDER: "zarinpal" }).length, 1);
+  assert.equal(configProblems({ ...ok, ALLOW_FAKE_PAYMENTS: undefined }).length, 1, "fake payments need an explicit opt-in");
   assert.equal(configProblems({ ...ok, AUTH_SECRET: "short" }).length, 1);
   assert.equal(configProblems({ ...ok, DATABASE_HOST: undefined }).length, 1);
   assert.deepEqual(configProblems({ NODE_ENV: "development", PAYMENT_PROVIDER: "zarinpal" }), []);

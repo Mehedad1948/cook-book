@@ -4,7 +4,9 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getViewer } from "@/lib/dal";
 import { maskPhone } from "@/lib/auth/phone";
-import { formatJalali } from "@/lib/format";
+import { formatJalali, formatToman } from "@/lib/format";
+import { listPaidPayments } from "@/lib/db/billing";
+import { getPlan } from "@/lib/billing/plans";
 import { logoutAction } from "./actions";
 
 export const metadata: Metadata = { title: "حساب من", robots: { index: false } };
@@ -23,6 +25,8 @@ export default function AccountPage() {
 async function AccountBody() {
   const v = await getViewer();
   if (!v.user) redirect("/login?next=/account");
+
+  const payments = await listPaidPayments(v.user.id, 5);
 
   return (
     <div className="grid max-w-xl gap-4">
@@ -43,6 +47,20 @@ async function AccountBody() {
         )}
         <Link href="/pricing" className="btn btn-primary mt-4">{v.subscription ? "تمدید اشتراک" : "مشاهدهٔ اشتراک‌ها"}</Link>
       </section>
+
+      {payments.length > 0 && (
+        <section className="card p-5">
+          <p className="mb-2 text-sm text-muted">پرداخت‌ها</p>
+          <ul className="divide-y divide-line">
+            {payments.map((p) => (
+              <li key={p.id} className="flex items-center justify-between gap-3 py-2">
+                <span>{getPlan(p.planKey)?.name ?? p.planKey} · {formatJalali(p.verifiedAt ?? p.createdAt)}</span>
+                <span className="font-bold">{formatToman(p.amountIRR)}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <form action={logoutAction}>
         <button className="btn btn-ghost w-full">خروج از حساب</button>

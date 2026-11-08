@@ -14,6 +14,9 @@ export function configProblems(env: Record<string, string | undefined>): string[
   if (sms === "inline" && pay !== "fake") {
     problems.push("SMS_PROVIDER=inline returns login codes to the browser; it must not run next to a real payment provider.");
   }
+  if (pay === "fake" && env.ALLOW_FAKE_PAYMENTS !== "1") {
+    problems.push("PAYMENT_PROVIDER=fake grants subscriptions without paying; in production it needs ALLOW_FAKE_PAYMENTS=1 (demo only).");
+  }
   if (!env.AUTH_SECRET || env.AUTH_SECRET.length < 32) {
     problems.push("AUTH_SECRET must be set to a random string of at least 32 characters.");
   }
