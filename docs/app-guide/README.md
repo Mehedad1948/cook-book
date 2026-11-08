@@ -205,7 +205,7 @@ These checks let a generator agent self-correct before a human sees the file.
 ### 3.5 Tasks that come with this model
 
 - **T-C1.** Convert `examples/beryani-isfahani.html` and `examples/khorak-bandari.html` into `content/recipes/*.ts` as seed data. Set `beryani-isfahani` to `premium` and `khorak-bandari` to `free` as a starting point (section 9.3). Check the rendered text against the HTML sources.
-- **T-C2.** **Amend `docs/recipe-guide/README.md`** so the generator outputs this format instead of HTML: replace the "Reference: ...html" paragraph with a pointer to the schema and a seed file, add the schema's field list to section 4, and add "run `validate:recipes`" to the checklist. The principles (sections 1–3, 5) stay unchanged. Keep the HTML examples only as visual reference until the seed files exist, then delete them.
+- **T-C2 (done).** **Amend `docs/recipe-guide/README.md`** so the generator outputs this format instead of HTML: replace the "Reference: ...html" paragraph with a pointer to the schema and a seed file, add the schema's field list to section 4, and add "run `validate:recipes`" to the checklist. The principles (sections 1–3, 5) stay unchanged. Keep the HTML examples only as visual reference until the seed files exist, then delete them.
 - **T-C3.** Move the Vazirmatn fonts from `docs/recipe-guide/template/fonts/` into `app/fonts/` (section 7). Print styling from `recipe.css` is reused in section 8.8.
 
 ---

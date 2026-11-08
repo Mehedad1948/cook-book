@@ -2,7 +2,11 @@
 
 What makes our Persian recipes good: exact enough that a first-timer gets it right, short enough that nothing is filler, and enriched with the few tips that actually save the dish.
 
-**Reference:** `examples/beryani-isfahani.html` is the model for tone, detail and structure (original PDF in `docs/samples/`). `examples/khorak-bandari.html` shows the same approach on a simpler dish. Open them in a browser to read them. The styling there is only for reference; the website has its own UI.
+**Output format:** one TypeScript file per recipe, `content/recipes/<slug>.ts`, exporting `defineRecipe({...})`. The schema is in `lib/recipe/schema.ts` (field list: `docs/app-guide/README.md` section 3.2). Do not write HTML. The website renders the data, so never put markup in text; the only inline markup allowed is `**bold**`.
+
+**Reference:** `content/recipes/beryani-isfahani.ts` (premium) and `content/recipes/khorak-bandari.ts` (free) are the models for tone, detail and structure. The older HTML versions in `examples/` are visual reference only.
+
+**Workflow:** write the file, run `npm run validate:recipes` (it automates the checklist in section 7 and also runs before every build), fix what it reports, then open `/recipes/<slug>` to check it visually.
 
 ---
 
@@ -90,3 +94,5 @@ Much shorter usually means missing cues or tips; much longer usually means fille
 - [ ] Mistakes table has 4–6 real failures of this dish.
 - [ ] Storage has days and a reheating or thawing method; safety limits where relevant.
 - [ ] Persian digits, correct نیم‌فاصله, no numbered step starting with a digit.
+- [ ] `npm run validate:recipes` passes with no errors.
+- [ ] Spices and salt that should not scale linearly are marked (see `scale` on ingredients), and the recipe states the tested serving range if it is not 2–8.
