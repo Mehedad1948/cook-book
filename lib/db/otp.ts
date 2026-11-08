@@ -39,8 +39,16 @@ export async function findActiveOtp(phone: string): Promise<OtpRow | null> {
   return r ? { id: r.id, phone: r.phone, codeHash: r.code_hash, expiresAt: r.expires_at, attempts: r.attempts } : null;
 }
 
-export async function bumpOtpAttempts(id: string): Promise<void> {
-  await getPool().query("UPDATE otp_requests SET attempts = attempts + 1 WHERE id = $1", [id]);
+/**
+ * Atomically claims one verification attempt. Concurrent guesses cannot exceed `max`: the
+ * counter is incremented inside the same statement that checks it. Returns false when exhausted.
+ */
+export async function claimOtpAttempt(id: string, max: number): Promise<boolean> {
+  const { rowCount } = await getPool().query(
+    "UPDATE otp_requests SET attempts = attempts + 1 WHERE id = $1 AND attempts < $2 AND consumed_at IS NULL",
+    [id, max],
+  );
+  return rowCount === 1;
 }
 
 /** Single use: returns true only for the one caller that consumed it. */

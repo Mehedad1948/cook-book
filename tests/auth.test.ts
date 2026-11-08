@@ -103,3 +103,15 @@ test("a new code supersedes the previous one", db, async () => {
   if (!a.ok || !b.ok || !a.devCode || !b.devCode || a.devCode === b.devCode) return;
   assert.equal((await verifyOtp(phone, a.devCode, null)).ok, false);
 });
+
+test("parallel wrong guesses cannot exceed the attempt cap", db, async () => {
+  const phone = newPhone();
+  const r = await requestOtp(phone, null);
+  assert.ok(r.ok && r.devCode);
+  if (!r.ok || !r.devCode) return;
+  const wrong = r.devCode === "000000" ? "111111" : "000000";
+  await Promise.all(Array.from({ length: 20 }, () => verifyOtp(phone, wrong, null)));
+  const row = await getPool().query("SELECT attempts FROM otp_requests WHERE phone = $1", [phone]);
+  assert.ok(row.rows[0].attempts <= OTP_MAX_ATTEMPTS, `attempts=${row.rows[0].attempts}`);
+  assert.equal((await verifyOtp(phone, r.devCode, null)).ok, false, "the correct code is refused once the cap is spent");
+});

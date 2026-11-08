@@ -102,6 +102,7 @@ type Recipe = {
   occasion?: ("daily" | "guests" | "nowruz" | "yalda" | "ramadan" | "nazri")[];
   kidFriendly?: boolean;
   makeAhead?: string;              // what can be prepared a day ahead
+  scaling?: { min: number; max: number; note?: string };   // serving range the recipe was tested for (default 2-8)
   summary: string;                 // 1–2 sentences, plain text. Used for cards, meta description, teaser
   accent: { accent: string; soft: string; line: string };   // per-recipe colors (from the PDF era)
   image?: { src: string; alt: string };
@@ -150,6 +151,7 @@ type Ingredient = {
   note?: string;                  // "بی‌استخوان (با استخوان حدود ۷۵۰ گرم)"، "سرپر"، "متوسط"، "برای رو"
   optional?: boolean;             // renders "اختیاری"
   scalable?: boolean;             // default true; false for salt-to-taste, oil for frying
+  adjustToTaste?: boolean;        // spices/salt: shows a "taste and adjust" hint at 2x or more (no invented factor)
 };
 
 type Stage = {                    // one section per stage: prep, cook, assemble...
@@ -523,18 +525,37 @@ Capture form + Telegram/email automation, **gift subscriptions and family plan**
 
 ## 13. Implementation status (kept current)
 
-**Done: phases 0–1 except T-C2 (recipe-guide still emits HTML) and a production Lighthouse performance run (dev-mode accessibility 100, SEO 100 measured on a free recipe); plus the auth seam:** Persian RTL layout with Vazirmatn (`app/fonts/`), design tokens (light/dark), home, `/recipes` (client search incl. ingredient-on-hand, filters), `/category/[slug]`, `/recipes/[slug]`, `/pricing` and `/login` placeholders, sitemap, robots, JSON-LD, print styles. Content: Zod schema, rules validator (`npm run validate:recipes`, also run by `prebuild`), generated index (`npm run recipes:index`), both seeds converted (T-C1, T-C3). Paywall: `toPublic()` projections, `lib/dal.ts` reading cookies inside a Suspense island; free recipes are fully static, premium recipes are partial-prerender (teaser shell, viewer-specific body). Tests: `npm test` (format, rules, projections) and `npm run check:leaks` (scans client chunks and prerendered output, and live responses when `BASE_URL` is set).
+Phases 0–5 are built and committed. Phase 6 (growth) is waiting on owner decisions. A real SMS provider and a real payment gateway are intentionally **not** part of this project; both sit behind adapters (`lib/sms`, `lib/payments`), so adding one later is one new file each.
 
-**Database:** local PostgreSQL configured through `.env` (`DATABASE_*`; never committed). Plain SQL migrations in `db/migrations`, applied with `npm run db:migrate`. Repositories are per use case in `lib/db/*` so the host can change without touching callers.
+### What exists
 
-**Auth (phase 2, done):** phone + OTP via the `SmsProvider` adapter; only the dev `inline` provider exists (shows the code in a labelled banner). Codes are HMAC-hashed, expire in 2 minutes, are single use, attempt-limited (5) and rate-limited per phone and per IP. Sessions are random tokens stored as SHA-256 hashes in an `httpOnly` cookie. `lib/dal.ts` resolves cookie -> user -> active subscription per request (React `cache`, never a shared cache) and fails closed. `proxy.ts` only redirects when the cookie is absent. `instrumentation.ts` refuses to start in production with unsafe settings (`lib/guard.ts`, unit-tested); set `ALLOW_INSECURE_LOCAL=1` to run `next start` locally.
+| Area | State |
+|---|---|
+| **Foundation** | Persian RTL layout, Vazirmatn (`app/fonts/`), white background with lavender/lime palette, no shadows, light and dark themes, helpers `fa`, `formatAmount`, `formatJalali`, `formatToman`. |
+| **Content** | Zod schema, rules validator (`npm run validate:recipes`, also run by `prebuild`), generated index (`npm run recipes:index`), two seed recipes, draft/review/published `status`, `npm run new-recipe <slug>` (always creates a draft; draft problems are warnings, never build failures). The recipe-guide now targets this `.ts` format. |
+| **Pages** | Home, catalog with name and ingredient-on-hand search, categories, recipe page, pricing, login, account, favorites, shopping list, cook mode, admin summary, About/Terms/Privacy/Refund (drafts), sitemap, robots, JSON-LD, manifest and icon. |
+| **Paywall** | `toPublic()` projections; the free recipe is fully static, the premium recipe is a partial prerender (teaser shell + a session-checked island). `lib/dal.ts` is the single authority and fails closed. |
+| **Database** | PostgreSQL via `.env` (`DATABASE_*`, never committed). SQL migrations in `db/migrations`, applied with `npm run db:migrate`. Repositories are per use case in `lib/db/*`. |
+| **Auth** | Phone + OTP through `SmsProvider`; only the dev `inline` provider exists (shows the code in a labelled banner). Codes are HMAC-hashed, expire in 2 minutes, single use, attempt-limited (atomic claim, max 5) and rate-limited per phone and IP. Sessions are random tokens stored as SHA-256 hashes in an `httpOnly` cookie. |
+| **Billing** | Plans in `lib/billing/plans.ts` (**test prices**), prepaid time with renewals queued back to back, `PaymentProvider` adapter with only the `fake` provider. Checkout and callback are idempotent on `authority` (row lock + unique `payment_id`); failed payments are terminal; expiry is enforced by the query. |
+| **Features** | Servings scaler (`lib/recipe/scale.ts`), checkable ingredients, favorites and "recently cooked", cook mode (wake lock, RTL swipe/keys, timers, resume), subscriber-only shopping list, admin summary (role gate in the page, not the proxy). |
+| **Quality** | `npm test` (unit and database integration tests; DB tests skip when no database is configured), `npm run check:leaks` (client chunks and prerendered output contain no premium text, with a positive control), `npm run typecheck`, CI in `.github/workflows/ci.yml`. |
 
-**Billing (phase 3, done with the fake gateway):** plans in `lib/billing/plans.ts` (TEST prices, owner must set real ones), prepaid time that queues renewals back to back, `PaymentProvider` adapter with only the `fake` provider (no real gateway will be connected in this project; a real one is one new file). Checkout and callback are idempotent on the payment `authority` (row lock + unique `payment_id`); failed payments are terminal; expiry is enforced by the query. In production `PAYMENT_PROVIDER=fake` additionally needs `ALLOW_FAKE_PAYMENTS=1`.
+### Measured
+Production build, free recipe, localhost with no throttling: LCP 397 ms, CLS 0.00. Lighthouse (dev server, mobile): accessibility 100, best practices 100, SEO 100. Not measured on a real phone or network.
 
-**Features (phase 4, done):** servings scaler (pure rules in `lib/recipe/scale.ts`; steps keep authored amounts and show the multiplier; no invented taste curves, only a "taste and adjust" hint), checkable ingredients (per device), favorites and "recently cooked", cook mode (`/recipes/[slug]/cook`: one stage at a time, wake lock, RTL swipe/keys, timers, resume), subscriber-only shopping list (merged by name+unit, shareable text), web manifest and icon. Not done: service worker/offline caching, ingredient `aisle` grouping, print polish for the scaler.
+### Run locally
+1. PostgreSQL running, `.env` with `DATABASE_HOST/PORT/USERNAME/PASSWORD/NAME`.
+2. `npm install`, `npm run db:migrate`, `npm run dev`.
+3. Login shows the code in the dev banner; payment goes through the fake gateway page.
+4. `next start` locally needs `AUTH_SECRET` (32+ characters) and `ALLOW_FAKE_PAYMENTS=1`, or `ALLOW_INSECURE_LOCAL=1`. `instrumentation.ts` refuses unsafe production settings (`lib/guard.ts`).
+5. Make an admin with SQL: `UPDATE users SET role = 'admin' WHERE phone = '+98...';`
 
-**Pages and policy:** About, Terms, Privacy and Refund exist as clearly labelled DRAFTS (no contact details were invented; the owner must add them and have a person review before real money flows). No Contact page yet for the same reason.
+### Important
+Inline OTP means **anyone can log in as any phone number**, and the fake gateway grants subscriptions without paying. This is a demo configuration: do not put it on a public URL with real users or real data.
 
-**Owner VERIFY list:** real prices (current ones are test values), refund window (7 days is a proposal), contact details, domain and handles, hosting, Google paywalled-content markup, per-recipe `adjustToTaste` and `scaling` ranges, who reviews the legal drafts. A real SMS provider and payment gateway are intentionally NOT part of this project; both sit behind adapters (`lib/sms`, `lib/payments`).
+### Owner VERIFY list
+Real prices (current ones are test values); refund window (7 days is a proposal) and the legal drafts; contact details (none were invented, so there is no Contact page); domain and social handles; hosting; Google paywalled-content markup for premium pages; per-recipe `adjustToTaste` flags and `scaling` ranges; the audience assumptions in section 1a.
 
-**Not built:** admin summary page, per-recipe share images, A/B tests, referral and gift plans (phase 5-6 items).
+### Not built
+Service worker/offline caching; ingredient `aisle` grouping; per-recipe share images (Persian text in `ImageResponse` needs a shaping check); preview URLs per pull request (depends on the host); phase 6 (gift and family plans, referral codes, channel automation, A/B tests). React Query was deliberately not added: favorites use `useOptimistic` with server actions. Add TanStack Query only if a feature needs client-side caching or polling.

@@ -12,9 +12,11 @@ for (const r of recipes) {
   seen.add(r.slug);
   const issues = checkRecipe(r, r.slug);
   for (const i of issues) {
-    const tag = i.level === "error" ? "✗" : "!";
-    console.log(`${tag} ${r.slug} ${i.path}: ${i.message}`);
-    if (i.level === "error") errors++;
+    // problems in a draft never fail the build; they must be fixed before status becomes "published"
+    const level = r.status === "published" ? i.level : "warn";
+    const tag = level === "error" ? "✗" : "!";
+    console.log(`${tag} ${r.slug}${r.status === "published" ? "" : ` [${r.status}]`} ${i.path}: ${i.message}`);
+    if (level === "error") errors++;
     else warns++;
   }
 }

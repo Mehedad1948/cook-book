@@ -2,6 +2,7 @@ import "server-only";
 import { cacheTag } from "next/cache";
 import { recipes } from "@/content/recipes";
 import type { Recipe } from "./schema";
+import { isPublished } from "./status";
 import { toCard, toPublic, type PublicRecipe, type RecipeCard } from "./public";
 
 /**
@@ -12,7 +13,7 @@ import { toCard, toPublic, type PublicRecipe, type RecipeCard } from "./public";
  * INTERNAL: `loadFullRecipe` returns premium text. Only lib/dal.ts may import it.
  */
 
-const published = (r: Recipe) => r.status === "published";
+const published = isPublished;
 
 export async function loadFullRecipe(slug: string): Promise<Recipe | null> {
   "use cache";

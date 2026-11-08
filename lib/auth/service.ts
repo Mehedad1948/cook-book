@@ -2,7 +2,7 @@ import { normalizePhone } from "./phone";
 import { generateOtp, hashOtp, hashToken, newSessionToken, safeEqualHex } from "./crypto";
 import { getSmsProvider } from "../sms";
 import {
-  bumpOtpAttempts,
+  claimOtpAttempt,
   consumeOtp,
   countRecentOtpsByIp,
   countRecentOtpsByPhone,
@@ -52,13 +52,12 @@ export async function verifyOtp(rawPhone: string, rawCode: string, userAgent: st
 
   const otp = await findActiveOtp(phone);
   if (!otp) return { ok: false, error: "کد منقضی شده یا درخواست نشده. دوباره کد بگیر." };
-  if (otp.attempts >= OTP_MAX_ATTEMPTS) return { ok: false, error: "تعداد تلاش‌ها زیاد بود. دوباره کد بگیر." };
+  if (!(await claimOtpAttempt(otp.id, OTP_MAX_ATTEMPTS))) {
+    return { ok: false, error: "تعداد تلاش‌ها زیاد بود. دوباره کد بگیر." };
+  }
 
   const latin = code.replace(/[۰-۹]/g, (d) => String(d.charCodeAt(0) - 0x06f0)).replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x0660));
-  if (!safeEqualHex(otp.codeHash, hashOtp(phone, latin))) {
-    await bumpOtpAttempts(otp.id);
-    return { ok: false, error: "کد درست نیست." };
-  }
+  if (!safeEqualHex(otp.codeHash, hashOtp(phone, latin))) return { ok: false, error: "کد درست نیست." };
   if (!(await consumeOtp(otp.id))) return { ok: false, error: "این کد قبلاً استفاده شده است." };
 
   const user = await upsertUserByPhone(phone);

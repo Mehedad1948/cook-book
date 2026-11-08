@@ -95,4 +95,5 @@ Much shorter usually means missing cues or tips; much longer usually means fille
 - [ ] Storage has days and a reheating or thawing method; safety limits where relevant.
 - [ ] Persian digits, correct نیم‌فاصله, no numbered step starting with a digit.
 - [ ] `npm run validate:recipes` passes with no errors.
-- [ ] Spices and salt that should not scale linearly are marked (see `scale` on ingredients), and the recipe states the tested serving range if it is not 2–8.
+- [ ] Spices and salt that rarely scale linearly have `adjustToTaste: true`, and the recipe sets `scaling: { min, max }` if it was not tested for 2–8 servings.
+- [ ] New recipes start from `npm run new-recipe <slug>` (a draft); change `status` to `"published"` only when validation has no errors.
