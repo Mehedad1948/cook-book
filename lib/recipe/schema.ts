@@ -67,6 +67,8 @@ export const ingredientSchema = z.object({
   note: z.string().min(1).optional(),
   optional: z.boolean().optional(),
   scalable: z.boolean().optional(),
+  /** Scales linearly but spices/salt rarely do: shows a "taste and adjust" hint at 2x or more. The factor itself is never guessed. */
+  adjustToTaste: z.boolean().optional(),
 });
 
 export const actionSchema = z.object({
@@ -104,6 +106,10 @@ export const recipeSchema = z.object({
   occasion: z.array(z.enum(OCCASIONS)).optional(),
   kidFriendly: z.boolean().optional(),
   makeAhead: z.string().min(1).optional(),
+  /** Serving range the recipe was tested for (default 2-8). Outside it the UI advises cooking in batches. */
+  scaling: z
+    .object({ min: z.number().int().positive(), max: z.number().int().positive(), note: z.string().min(1).optional() })
+    .optional(),
   summary: z.string().min(1),
   accent: z.object({ accent: hex, soft: hex, line: hex }),
   image: z.object({ src: z.string(), alt: z.string() }).optional(),

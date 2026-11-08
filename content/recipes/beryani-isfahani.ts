@@ -33,9 +33,9 @@ export default defineRecipe({
         { name: "جگر سفید (شُش) گوسفند", amount: [200, 250], unit: "g" },
         { name: "دنبه", amount: [80, 100], unit: "g" },
         { name: "پیاز", amount: 1, unit: "piece", note: "بزرگ" },
-        { name: "زردچوبه", amount: 0.5, unit: "tsp" },
+        { name: "زردچوبه", adjustToTaste: true, amount: 0.5, unit: "tsp" },
         {
-          name: "دارچین پودر",
+          name: "دارچین پودر", adjustToTaste: true,
           amount: [1, 1.5],
           unit: "tsp",
           note: "+ کمی برای ملاقه و رو",

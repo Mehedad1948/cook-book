@@ -12,9 +12,12 @@ import { join } from "node:path";
 import { recipes } from "../content/recipes";
 import { collectStrings } from "../lib/recipe/rules";
 import { toPublic } from "../lib/recipe/public";
+import { ingredientQuantity } from "../lib/recipe/labels";
+import { scaleIngredient } from "../lib/recipe/scale";
 
-function sentinels(): { slug: string; path: string; needle: string }[] {
-  const out: { slug: string; path: string; needle: string }[] = [];
+type Needle = { slug: string; path: string; needle: string; scoped?: boolean };
+function sentinels(): Needle[] {
+  const out: Needle[] = [];
   for (const r of recipes.filter((x) => x.access === "premium")) {
     const pub = JSON.stringify(toPublic(r));
     for (const [path, text] of collectStrings(r)) {
@@ -22,6 +25,15 @@ function sentinels(): { slug: string; path: string; needle: string }[] {
       const run = text.split("**").sort((a, b) => b.length - a.length)[0].trim();
       if (run.length < 18 || pub.includes(run)) continue; // short or legitimately public
       out.push({ slug: r.slug, path, needle: run.slice(0, 40) });
+    }
+  }
+  // amounts, as authored and as the scaler would print them: ingredient amounts are gated too
+  for (const r of recipes.filter((x) => x.access === "premium")) {
+    for (const it of r.ingredients.flatMap((g) => g.items)) {
+      for (const f of [1, 0.5, 1.5, 2]) {
+        const line = ingredientQuantity(scaleIngredient(it, f));
+        if (line.length >= 8 && /[۰-۹]/.test(line)) if (!JSON.stringify(toPublic(r)).includes(line)) out.push({ slug: r.slug, path: `ingredient "${it.name}" x${f}`, needle: line, scoped: true });
+      }
     }
   }
   return out;
@@ -58,7 +70,11 @@ for (const root of roots) {
     if (root.includes("server") && file.endsWith(".js")) continue; // server code may hold content
     scanned++;
     const body = readFileSync(file, "utf8");
-    for (const n of needles) if (body.includes(n.needle)) report(file, n);
+    for (const n of needles) {
+      // short amount strings also occur legitimately on other recipes: only check them where the premium page lives
+      if (n.scoped && !(file.includes(n.slug) || file.includes(join(".next", "static")))) continue;
+      if (body.includes(n.needle)) report(file, n);
+    }
   }
 }
 console.log(`scanned ${scanned} files in .next (client chunks + prerendered output)`);

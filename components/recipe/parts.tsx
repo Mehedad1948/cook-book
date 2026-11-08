@@ -7,10 +7,11 @@ import {
   HEAT_LABEL,
   OCCASION_LABEL,
   actionMinutes,
-  ingredientQuantity,
 } from "@/lib/recipe/labels";
 import { fa, formatDuration, formatRange, formatTotalTime } from "@/lib/format";
 import { RichText } from "../rich-text";
+import { ScaledIngredients, ServingsControl, ServingsProvider, StepsNotice } from "./servings";
+import { servingRange } from "@/lib/recipe/scale";
 import { tileOf } from "../recipe-card";
 import {
   CheckIcon,
@@ -175,25 +176,9 @@ function IngredientsCard({ recipe: r }: { recipe: Recipe }) {
     <section id="ingredients" className="card overflow-hidden" aria-labelledby="ingredients-title">
       <h2 id="ingredients-title" className="px-5 py-3 text-lg font-extrabold text-white" style={{ background: "var(--r-solid)" }}>
         مواد لازم
-        <span className="ms-2 text-sm font-medium text-white/85">برای {fa(r.facts.servings)} نفر</span>
       </h2>
-      {r.ingredients.map((g, gi) => (
-        <div key={gi}>
-          {g.group && <h3 className="bg-sunken px-5 py-2 text-sm font-bold text-muted">{g.group}</h3>}
-          <table className="w-full text-[0.95rem]">
-            <tbody>
-              {g.items.map((it, i) => (
-                <tr key={i} className="border-b last:border-b-0" style={{ borderColor: "var(--r-line)" }}>
-                  <th scope="row" className="py-2.5 ps-5 pe-2 text-start font-medium">{it.name}</th>
-                  <td className="py-2.5 pe-5 ps-2 text-end font-bold" style={{ color: "var(--r-accent)" }}>
-                    {ingredientQuantity(it)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ))}
+      <ServingsControl />
+      <ScaledIngredients groups={r.ingredients} />
     </section>
   );
 }
@@ -234,7 +219,7 @@ const ANCHORS = [
 
 export function RecipeSections({ recipe: r }: { recipe: Recipe }) {
   return (
-    <>
+    <ServingsProvider base={r.facts.servings} range={servingRange(r)}>
       <nav aria-label="بخش‌های دستور" className="no-print sticky top-16 z-30 border-b border-line bg-paper/90 backdrop-blur">
         <ul className="container-page flex gap-2 overflow-x-auto py-2">
           {ANCHORS.map((a) => (
@@ -250,6 +235,7 @@ export function RecipeSections({ recipe: r }: { recipe: Recipe }) {
 
         <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-6">
           <h2 id="steps" className="section-title">مراحل پخت</h2>
+          <StepsNotice />
           {r.stages.map((s, i) => <StageCard key={i} stage={s} index={i} />)}
 
           {r.extraTable && (
@@ -321,7 +307,7 @@ export function RecipeSections({ recipe: r }: { recipe: Recipe }) {
           <p className="prose-note border-t border-line pt-4">{r.closing}</p>
         </div>
       </div>
-    </>
+    </ServingsProvider>
   );
 }
 

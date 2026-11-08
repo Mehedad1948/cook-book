@@ -24,12 +24,13 @@ export function fa(n: number): string {
 
 /** Recipe quantity: 1.5 -> "۱½", 0.5 -> "½", 2 -> "۲", 2.3 -> "۲٫۳" */
 export function formatAmount(n: number): string {
+  const plain = (x: number) => new Intl.NumberFormat("fa-IR", { useGrouping: false }).format(x);
   const whole = Math.floor(n + 1e-9);
   const frac = Math.round((n - whole) * 100) / 100;
-  if (frac === 0) return fa(whole);
+  if (frac === 0) return plain(whole);
   const glyph = FRACTIONS[frac];
-  if (glyph) return whole === 0 ? glyph : `${fa(whole)}${glyph}`;
-  return new Intl.NumberFormat("fa-IR", { maximumFractionDigits: 1 }).format(n);
+  if (glyph) return whole === 0 ? glyph : `${plain(whole)}${glyph}`;
+  return new Intl.NumberFormat("fa-IR", { maximumFractionDigits: 1, useGrouping: false }).format(n);
 }
 
 export function formatRange(v: number | [number, number], f = formatAmount): string {
