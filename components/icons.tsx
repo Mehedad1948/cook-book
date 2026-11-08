@@ -64,6 +64,16 @@ export const SparkIcon = (p: P) => (
   <svg {...base(p)}><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z" /></svg>
 );
 
+export const HeartIcon = (p: P) => (
+  <svg {...base(p)}><path d="M12 20s-7-4.4-9-9.2C1.8 7.4 4 4.5 7 4.5c1.9 0 3.4 1 5 3 1.6-2 3.1-3 5-3 3 0 5.2 2.9 4 6.3-2 4.800-9 9.200-9 9.200Z" /></svg>
+);
+export const ListIcon = (p: P) => (
+  <svg {...base(p)}><path d="M9 6h11M9 12h11M9 18h11" /><path d="m3.5 6 1 1 2-2M3.5 12l1 1 2-2M3.5 18l1 1 2-2" /></svg>
+);
+export const PlayIcon = (p: P) => (
+  <svg {...base(p)}><path d="M7 4.5v15l12-7.500L7 4.500Z" /></svg>
+);
+
 /** Brand mark: a chef's hat with a small keyhole ("secret"). */
 export function LogoMark(p: P) {
   return (

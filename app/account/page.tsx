@@ -62,6 +62,11 @@ async function AccountBody() {
         </section>
       )}
 
+      <nav className="grid gap-2 sm:grid-cols-2" aria-label="بخش‌های حساب">
+        <Link href="/favorites" className="btn btn-ghost">علاقه‌مندی‌ها</Link>
+        <Link href="/shopping-list" className="btn btn-ghost">لیست خرید</Link>
+      </nav>
+
       <form action={logoutAction}>
         <button className="btn btn-ghost w-full">خروج از حساب</button>
       </form>

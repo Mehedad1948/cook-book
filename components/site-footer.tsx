@@ -18,7 +18,10 @@ export function SiteFooter() {
         <nav aria-label="پیوندها" className="grid content-start gap-2 text-sm">
           <Link href="/recipes" className="hover:text-brand-ink">همهٔ دستور پخت‌ها</Link>
           <Link href="/pricing" className="hover:text-brand-ink">اشتراک</Link>
-          <Link href="/login" className="hover:text-brand-ink">ورود</Link>
+          <Link href="/about" className="hover:text-brand-ink">دربارهٔ ما</Link>
+          <Link href="/terms" className="hover:text-brand-ink">قوانین</Link>
+          <Link href="/privacy" className="hover:text-brand-ink">حریم خصوصی</Link>
+          <Link href="/refund" className="hover:text-brand-ink">بازگشت وجه</Link>
         </nav>
         <p className="text-sm text-muted">
           شمارهٔ موبایل تنها چیزی است که برای ورود لازم داریم. نمایهٔ عمومی نداریم و شمارهٔ شما هرگز نمایش یا به اشتراک گذاشته نمی‌شود.

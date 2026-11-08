@@ -531,4 +531,10 @@ Capture form + Telegram/email automation, **gift subscriptions and family plan**
 
 **Billing (phase 3, done with the fake gateway):** plans in `lib/billing/plans.ts` (TEST prices, owner must set real ones), prepaid time that queues renewals back to back, `PaymentProvider` adapter with only the `fake` provider (no real gateway will be connected in this project; a real one is one new file). Checkout and callback are idempotent on the payment `authority` (row lock + unique `payment_id`); failed payments are terminal; expiry is enforced by the query. In production `PAYMENT_PROVIDER=fake` additionally needs `ALLOW_FAKE_PAYMENTS=1`.
 
-**Next:** phase 2 needs a database (Neon is configured in the workspace but needs authorization) before OTP, sessions and subscriptions; then T-C2 (amend the recipe-guide to emit `.ts`), OG images per recipe (Persian text in `ImageResponse` needs a shaping check), cook mode, scaler, and TanStack Query when favorites/shopping list need optimistic client state (add it then, not before).
+**Features (phase 4, done):** servings scaler (pure rules in `lib/recipe/scale.ts`; steps keep authored amounts and show the multiplier; no invented taste curves, only a "taste and adjust" hint), checkable ingredients (per device), favorites and "recently cooked", cook mode (`/recipes/[slug]/cook`: one stage at a time, wake lock, RTL swipe/keys, timers, resume), subscriber-only shopping list (merged by name+unit, shareable text), web manifest and icon. Not done: service worker/offline caching, ingredient `aisle` grouping, print polish for the scaler.
+
+**Pages and policy:** About, Terms, Privacy and Refund exist as clearly labelled DRAFTS (no contact details were invented; the owner must add them and have a person review before real money flows). No Contact page yet for the same reason.
+
+**Owner VERIFY list:** real prices (current ones are test values), refund window (7 days is a proposal), contact details, domain and handles, hosting, Google paywalled-content markup, per-recipe `adjustToTaste` and `scaling` ranges, who reviews the legal drafts. A real SMS provider and payment gateway are intentionally NOT part of this project; both sit behind adapters (`lib/sms`, `lib/payments`).
+
+**Not built:** admin summary page, per-recipe share images, A/B tests, referral and gift plans (phase 5-6 items).

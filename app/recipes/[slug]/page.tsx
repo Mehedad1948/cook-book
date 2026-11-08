@@ -8,6 +8,7 @@ import { breadcrumbJsonLd, recipeJsonLd } from "@/lib/recipe/jsonld";
 import { CATEGORY_LABEL } from "@/lib/recipe/labels";
 import { JsonLd } from "@/components/json-ld";
 import { RecipeCard } from "@/components/recipe-card";
+import { FavoriteSlot } from "@/components/recipe/toolbar";
 import { BodySkeleton, Paywall, RecipeHero, RecipeSections, TeaserSections } from "@/components/recipe/parts";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -54,7 +55,14 @@ async function RecipeView({ params }: Props) {
           { name: meta.title, path: `/recipes/${slug}` },
         ])}
       />
-      <RecipeHero recipe={meta} />
+      <RecipeHero
+        recipe={meta}
+        actions={
+          <Suspense fallback={null}>
+            <FavoriteSlot slug={slug} />
+          </Suspense>
+        }
+      />
 
       {pub.kind === "full" ? (
         // Free recipe: the whole body is part of the static, cached shell.

@@ -1,5 +1,7 @@
 import Link from "next/link";
-import type { Action, Recipe, Stage, Tip } from "@/lib/recipe/schema";
+import { Suspense } from "react";
+import { RecipeToolbar } from "./toolbar";
+import type { Action, Recipe, Stage } from "@/lib/recipe/schema";
 import type { RecipeMeta, Teaser } from "@/lib/recipe/public";
 import {
   CATEGORY_LABEL,
@@ -10,6 +12,7 @@ import {
 } from "@/lib/recipe/labels";
 import { fa, formatDuration, formatRange, formatTotalTime } from "@/lib/format";
 import { RichText } from "../rich-text";
+import { TipBox } from "../tip-box";
 import { ScaledIngredients, ServingsControl, ServingsProvider, StepsNotice } from "./servings";
 import { servingRange } from "@/lib/recipe/scale";
 import { tileOf } from "../recipe-card";
@@ -22,13 +25,12 @@ import {
   SnowflakeIcon,
   SparkIcon,
   UsersIcon,
-  WarnIcon,
   ArrowIcon,
 } from "../icons";
 
 /* ───────────────────────── Hero ───────────────────────── */
 
-export function RecipeHero({ recipe: r }: { recipe: RecipeMeta }) {
+export function RecipeHero({ recipe: r, actions }: { recipe: RecipeMeta; actions?: React.ReactNode }) {
   const premium = r.access === "premium";
   const f = r.facts;
   return (
@@ -58,6 +60,8 @@ export function RecipeHero({ recipe: r }: { recipe: RecipeMeta }) {
         <h1 className="text-3xl font-extrabold leading-snug sm:text-5xl">{r.title}</h1>
         {r.altTitle && <p className="mt-1 text-lg text-ink/80">({r.altTitle})</p>}
         <p className="mt-4 max-w-2xl text-base leading-8 text-ink/85 sm:text-lg">{r.summary}</p>
+
+        {actions && <div className="no-print mt-5 flex flex-wrap gap-2">{actions}</div>}
 
         <dl className="mt-6 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
           <Fact icon={<UsersIcon />} label="تعداد" value={`${fa(f.servings)} نفر${f.servingsNote ? ` (${f.servingsNote})` : ""}`} />
@@ -89,21 +93,6 @@ function Fact({ icon, label, value, sub }: { icon: React.ReactNode; label: strin
 }
 
 /* ───────────────────────── Small pieces ───────────────────────── */
-
-export function TipBox({ tip }: { tip: Tip }) {
-  const warn = tip.kind === "احتیاط";
-  return (
-    <aside className="tipbox" role="note">
-      <p>
-        <span className="tip-label inline-flex items-center gap-1">
-          {warn && <WarnIcon width={16} height={16} />}
-          {tip.title ?? tip.kind}:
-        </span>{" "}
-        <RichText text={tip.text} />
-      </p>
-    </aside>
-  );
-}
 
 function CueChips({ a }: { a: Action }) {
   const time = actionMinutes(a);
@@ -178,7 +167,7 @@ function IngredientsCard({ recipe: r }: { recipe: Recipe }) {
         مواد لازم
       </h2>
       <ServingsControl />
-      <ScaledIngredients groups={r.ingredients} />
+      <ScaledIngredients slug={r.slug} groups={r.ingredients} />
     </section>
   );
 }
@@ -234,6 +223,9 @@ export function RecipeSections({ recipe: r }: { recipe: Recipe }) {
         <Sidebar recipe={r} />
 
         <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-6">
+          <Suspense fallback={null}>
+            <RecipeToolbar slug={r.slug} />
+          </Suspense>
           <h2 id="steps" className="section-title">مراحل پخت</h2>
           <StepsNotice />
           {r.stages.map((s, i) => <StageCard key={i} stage={s} index={i} />)}

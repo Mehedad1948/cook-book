@@ -14,6 +14,7 @@ const ITEMS = [
 /** Thumb-reach navigation for phones; hidden from md up (the header nav takes over). */
 export function BottomNav() {
   const pathname = usePathname();
+  if (pathname.endsWith("/cook")) return null; // cook mode has its own controls
   return (
     <nav
       aria-label="منوی پایین"
