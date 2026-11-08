@@ -1,69 +1,145 @@
-import Image from "next/image";
+import Link from "next/link";
+import { listCards } from "@/lib/recipe/load";
+import { CATEGORIES } from "@/lib/recipe/schema";
+import { CATEGORY_LABEL } from "@/lib/recipe/labels";
+import { BRAND } from "@/lib/site";
+import { RecipeCard } from "@/components/recipe-card";
+import { ArrowIcon, CheckIcon, ClockIcon, SearchIcon, WarnIcon } from "@/components/icons";
 
-export default function Home() {
+const QUICK = [
+  { href: "/recipes?occasion=daily", label: "شام امشب" },
+  { href: "/recipes?occasion=guests", label: "غذای مهمانی" },
+  { href: "/recipes?time=30", label: "زیر ۳۰ دقیقه" },
+  { href: "/recipes?mode=pantry", label: "چی تو یخچال دارم؟" },
+];
+
+const PILLARS = [
+  {
+    Icon: ClockIcon,
+    title: "حرارت و زمان، کنار هم",
+    text: "هر مرحله می‌گوید روی چه حرارتی و چند دقیقه؛ بدون «تا جا بیفتد» و «به اندازه».",
+  },
+  {
+    Icon: CheckIcon,
+    title: "نشانهٔ آماده شدن",
+    text: "زمان فقط راهنماست؛ نشانه تصمیم می‌گیرد: «تا طلایی شود»، «تا روغنش جدا شود».",
+  },
+  {
+    Icon: WarnIcon,
+    title: "جدول اشتباه‌های رایج",
+    text: "اگر سیب‌زمینی له شد یا غذا شور شد، علت و راه‌حلش همان‌جا نوشته شده است.",
+  },
+];
+
+export default async function Home() {
+  const cards = await listCards();
+  const free = cards.filter((c) => c.access === "free");
+  const featured = free[0] ?? cards[0];
+  const rest = cards.filter((c) => c.slug !== featured?.slug);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
+    <>
+      {/* Hero */}
+      <section className="relative overflow-hidden border-b border-line">
+        <div className="container-page py-12 sm:py-20">
+          <p className="chip mb-4 border-transparent !bg-lime font-bold text-[#1f4a0c]">{BRAND}</p>
+          <h1 className="max-w-3xl text-4xl font-extrabold leading-[1.5] sm:text-6xl sm:leading-[1.45]">
+            دستورهایی که <span className="text-brand">بار اول</span> درست درمی‌آیند
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="mt-5 max-w-2xl text-lg leading-9 text-muted sm:text-xl">
+            مقدار دقیق، حرارت و زمان، نشانهٔ آماده شدن هر مرحله، و راز کوچک‌هایی که تفاوت می‌سازند؛ برای آشپزی که نمی‌خواهد مواد و وقتش هدر برود.
           </p>
+
+          <form action="/recipes" role="search" className="mt-8 flex max-w-2xl gap-2">
+            <label className="relative flex-1">
+              <span className="sr-only">جستجوی دستور پخت</span>
+              <SearchIcon className="pointer-events-none absolute inset-y-0 start-4 my-auto text-muted" />
+              <input
+                name="q"
+                type="search"
+                placeholder="امشب چی بپزم؟ مثلاً: سوسیس، بریونی"
+                className="h-14 w-full rounded-full border border-line bg-surface ps-12 pe-4 text-base placeholder:text-muted/70"
+              />
+            </label>
+            <button className="btn btn-primary h-14 shrink-0 px-6" type="submit">بگرد</button>
+          </form>
+
+          <ul className="mt-5 flex flex-wrap gap-2" aria-label="میان‌بُرها">
+            {QUICK.map((q) => (
+              <li key={q.href}>
+                <Link href={q.href} className="chip min-h-10 bg-surface hover:bg-brand-soft">{q.label}</Link>
+              </li>
+            ))}
+          </ul>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* Featured free showcase */}
+      {featured && (
+        <section className="container-page py-12" aria-labelledby="featured-title">
+          <div className="mb-5 flex items-end justify-between gap-4">
+            <div>
+              <h2 id="featured-title" className="section-title">امتحانش کن؛ رایگان</h2>
+              <p className="text-muted">یک دستور کامل، دقیقاً با همان جزئیاتی که مشترک‌ها می‌بینند.</p>
+            </div>
+            <Link href="/recipes" className="hidden items-center gap-1 font-bold text-brand-ink sm:flex">
+              همهٔ دستورها <ArrowIcon width={18} height={18} />
+            </Link>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <RecipeCard recipe={featured} priority />
+            {rest.map((c) => <RecipeCard key={c.slug} recipe={c} />)}
+          </div>
+        </section>
+      )}
+
+      {/* Why us */}
+      <section className="border-y border-line bg-sunken py-12" aria-labelledby="why-title">
+        <div className="container-page">
+          <h2 id="why-title" className="section-title mb-6">چرا «راز سرآشپز»؟</h2>
+          <div className="grid gap-4 md:grid-cols-3">
+            {PILLARS.map(({ Icon, title, text }) => (
+              <div key={title} className="card p-5">
+                <span className="grid size-11 place-items-center rounded-2xl bg-brand-soft text-brand-ink">
+                  <Icon width={24} height={24} />
+                </span>
+                <h3 className="mt-3 text-lg font-extrabold">{title}</h3>
+                <p className="mt-1 text-muted">{text}</p>
+              </div>
+            ))}
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+
+      {/* Categories */}
+      <section className="container-page py-12" aria-labelledby="cats-title">
+        <h2 id="cats-title" className="section-title mb-5">دسته‌ها</h2>
+        <ul className="flex flex-wrap gap-2">
+          {CATEGORIES.map((c) => (
+            <li key={c}>
+              <Link href={`/category/${c}`} className="chip min-h-11 bg-surface px-5 text-base hover:bg-brand-soft">
+                {CATEGORY_LABEL[c]}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* Subscription teaser */}
+      <section className="container-page pb-12" aria-labelledby="sub-title">
+        <div
+          className="card overflow-hidden p-6 sm:p-10"
+          style={{ background: "var(--brand-soft)" }}
+        >
+          <h2 id="sub-title" className="section-title">دستورهای ویژهٔ مشترکین</h2>
+          <p className="mt-2 max-w-2xl text-muted">
+            دستورهای سخت‌تر و خاص با جدول‌های کمکی، نکته‌های انتخاب مواد و نگهداری. اشتراک پیش‌پرداخت است و تمدید خودکار ندارد.
+          </p>
+          <Link href="/pricing" className="btn btn-primary mt-5">
+            مشاهدهٔ اشتراک‌ها <ArrowIcon width={18} height={18} />
+          </Link>
+        </div>
+      </section>
+    </>
   );
 }

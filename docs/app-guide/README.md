@@ -93,6 +93,7 @@ Use `.ts` files (typed, comments allowed, no extra parser) validated by a **Zod*
 type Recipe = {
   slug: string;                    // ascii, kebab-case: "beryani-isfahani"
   access: "free" | "premium";
+  status: "draft" | "review" | "published";   // default published; only published recipes are loaded
   title: string;                   // "بریونی اصفهانی"
   altTitle?: string;               // common alternative name
   category: "main" | "stew" | "rice" | "soup" | "sauce" | "appetizer" | "dessert" | "street-food";
@@ -108,7 +109,8 @@ type Recipe = {
   facts: {                         // §4.1 Title and quick facts
     servings: number;              // default 4; the scaler multiplies from this
     servingsNote?: string;         // "۴ ساندویچ"
-    totalMinutes: number;
+    totalMinutes: number | [number, number];   // a range is allowed (beryani: 3–3.5 h)
+    approxTime?: boolean;          // renders "حدود ۴۰ دقیقه"
     activeMinutes?: number;
     extraTime?: { label: string; minutes: number }[];      // "با زودپز", "خیساندن"
     portion?: string;              // "هر پرس ۱۲۰ تا ۱۵۰ گرم"
@@ -131,7 +133,7 @@ type Recipe = {
   storage: {                       // §4.7
     fridgeDays?: number;
     freezerDays?: number;
-    freezable?: boolean;           // false renders "برای فریز کردن مناسب نیست" + reason in lines
+    freezable?: boolean;           // metadata for badges and filters; the visible explanation is written in `lines`
     lines: string[];
     variations?: { title: string; text: string }[];   // "مرغ بندری: ..."
   };
@@ -516,3 +518,13 @@ Capture form + Telegram/email automation, **gift subscriptions and family plan**
 5. Persian text, digits and ZWNJ follow the recipe-guide's section 5 everywhere in the UI, not only in recipes.
 6. Keep phases small; each ends with lint + build green and a short note of what was verified.
 7. When something here is marked `VERIFY`, list it for the owner at the end of the phase instead of guessing.
+
+---
+
+## 13. Implementation status (kept current)
+
+**Done: phases 0–1 except T-C2 (recipe-guide still emits HTML) and a production Lighthouse performance run (dev-mode accessibility 100, SEO 100 measured on a free recipe); plus the auth seam:** Persian RTL layout with Vazirmatn (`app/fonts/`), design tokens (light/dark), home, `/recipes` (client search incl. ingredient-on-hand, filters), `/category/[slug]`, `/recipes/[slug]`, `/pricing` and `/login` placeholders, sitemap, robots, JSON-LD, print styles. Content: Zod schema, rules validator (`npm run validate:recipes`, also run by `prebuild`), generated index (`npm run recipes:index`), both seeds converted (T-C1, T-C3). Paywall: `toPublic()` projections, `lib/dal.ts` reading cookies inside a Suspense island; free recipes are fully static, premium recipes are partial-prerender (teaser shell, viewer-specific body). Tests: `npm test` (format, rules, projections) and `npm run check:leaks` (scans client chunks and prerendered output, and live responses when `BASE_URL` is set).
+
+**Dev-only preview:** `/api/dev/access?as=subscriber&next=/recipes/beryani-isfahani` sets a cookie that `getAccess()` honours when `NODE_ENV !== "production"` (404 in production). Remove it when real login ships (phase 2).
+
+**Next:** phase 2 needs a database (Neon is configured in the workspace but needs authorization) before OTP, sessions and subscriptions; then T-C2 (amend the recipe-guide to emit `.ts`), OG images per recipe (Persian text in `ImageResponse` needs a shaping check), cook mode, scaler, and TanStack Query when favorites/shopping list need optimistic client state (add it then, not before).
