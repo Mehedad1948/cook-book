@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { Suspense } from "react";
+import { HeaderAuth, LoginLink } from "./header-auth";
 import { LogoMark } from "./icons";
 import { BRAND, NAV } from "@/lib/site";
 
@@ -17,9 +19,9 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
-        <Link href="/login" className="btn btn-ghost !min-h-10 !px-4 text-sm">
-          ورود
-        </Link>
+        <Suspense fallback={<LoginLink />}>
+          <HeaderAuth />
+        </Suspense>
       </div>
     </header>
   );

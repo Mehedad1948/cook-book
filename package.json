@@ -11,9 +11,10 @@
     "validate:recipes": "npm run recipes:index && tsx scripts/validate-recipes.ts",
     "predev": "npm run recipes:index",
     "prebuild": "npm run validate:recipes",
-    "test": "tsx --test tests/*.test.ts",
+    "test": "tsx --env-file-if-exists=.env --test tests/*.test.ts",
     "check:leaks": "tsx scripts/check-leaks.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "db:migrate": "tsx --env-file=.env scripts/migrate.ts"
   },
   "dependencies": {
     "next": "16.4.5",
