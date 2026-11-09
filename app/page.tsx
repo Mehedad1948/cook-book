@@ -39,35 +39,37 @@ export default async function Home() {
 
   return (
     <>
-      {/* Hero */}
-      <section className="relative overflow-hidden border-b border-line">
-        <div className="container-page py-12 sm:py-20">
-          <p className="chip mb-4 border-transparent !bg-lime font-bold text-[#1f4a0c]">{BRAND}</p>
-          <h1 className="max-w-3xl text-4xl font-extrabold leading-[1.5] sm:text-6xl sm:leading-[1.45]">
-            دستورهایی که <span className="text-brand">بار اول</span> درست درمی‌آیند
-          </h1>
-          <p className="mt-5 max-w-2xl text-lg leading-9 text-muted sm:text-xl">
-            مقدار دقیق، حرارت و زمان، نشانهٔ آماده شدن هر مرحله، و راز کوچک‌هایی که تفاوت می‌سازند؛ برای آشپزی که نمی‌خواهد مواد و وقتش هدر برود.
-          </p>
+      {/* Hero: the brand, large and centred */}
+      <section className="hero relative isolate overflow-hidden">
+        <span className="hero-blob hero-blob-a" aria-hidden />
+        <span className="hero-blob hero-blob-b" aria-hidden />
+        <span className="hero-blob hero-blob-c" aria-hidden />
 
-          <form action="/recipes" role="search" className="mt-8 flex max-w-2xl gap-2">
+        <div className="container-page relative flex min-h-[calc(100svh-4rem)] flex-col items-center justify-center py-16 text-center">
+          <h1 className="hero-brand" aria-label={BRAND}>
+            <span className="text-brand">راز</span>
+            <span>سرآشپز</span>
+          </h1>
+          <p className="hero-lede">دستور پخت‌های دقیق، <span className="font-brand text-brand text-[1.3em]">رازی</span> در میان نیست</p>
+
+          <form action="/recipes" role="search" className="hero-search mt-10">
             <label className="relative flex-1">
               <span className="sr-only">جستجوی دستور پخت</span>
-              <SearchIcon className="pointer-events-none absolute inset-y-0 start-4 my-auto text-muted" />
+              <SearchIcon className="pointer-events-none absolute inset-y-0 start-5 my-auto text-muted" />
               <input
                 name="q"
                 type="search"
-                placeholder="امشب چی بپزم؟ مثلاً: سوسیس، بریونی"
-                className="h-14 w-full rounded-full border border-line bg-surface ps-12 pe-4 text-base placeholder:text-muted/70"
+                placeholder="امشب چی بپزم؟"
+                className="h-14 w-full rounded-full bg-transparent ps-14 pe-4 text-base placeholder:text-muted/70 focus:outline-none"
               />
             </label>
-            <button className="btn btn-primary h-14 shrink-0 px-6" type="submit">بگرد</button>
+            <button className="btn btn-primary h-12 shrink-0 px-7" type="submit">بگرد</button>
           </form>
 
-          <ul className="mt-5 flex flex-wrap gap-2" aria-label="میان‌بُرها">
+          <ul className="mt-6 flex max-w-xl flex-wrap justify-center gap-2" aria-label="میان‌بُرها">
             {QUICK.map((q) => (
               <li key={q.href}>
-                <Link href={q.href} className="chip min-h-10 bg-surface hover:bg-brand-soft">{q.label}</Link>
+                <Link href={q.href} className="chip min-h-10 bg-surface/70 backdrop-blur hover:bg-brand-soft">{q.label}</Link>
               </li>
             ))}
           </ul>

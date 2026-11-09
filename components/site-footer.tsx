@@ -9,7 +9,7 @@ export function SiteFooter() {
         <div>
           <div className="flex items-center gap-2 text-brand">
             <LogoMark />
-            <span className="text-lg font-extrabold text-ink">{BRAND}</span>
+            <span className="font-brand text-2xl text-ink">{BRAND}</span>
           </div>
           <p className="mt-3 text-sm text-muted">
             دستورهایی که بار اول درست درمی‌آیند: مقدار دقیق، حرارت و زمان، نشانهٔ آماده شدن و جدول اشتباه‌های رایج.

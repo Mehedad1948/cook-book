@@ -19,6 +19,13 @@ const vazir = localFont({
   fallback: ["Tahoma", "sans-serif"],
 });
 
+const bahar = localFont({
+  src: [{ path: "./fonts/Bahar-Bold.woff2", weight: "700", style: "normal" }],
+  variable: "--font-bahar",
+  display: "swap",
+  fallback: ["Tahoma", "sans-serif"],
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: `${BRAND} | دستور پخت‌های دقیق ایرانی`, template: `%s | ${BRAND}` },
@@ -39,7 +46,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fa" dir="rtl" className={vazir.variable}>
+    <html lang="fa" dir="rtl" className={`${vazir.variable} ${bahar.variable}`}>
       <body className="flex min-h-dvh flex-col">
         <a
           href="#main"

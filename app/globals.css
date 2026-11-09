@@ -59,6 +59,7 @@
   --color-lime: var(--lime);
   --color-peach: var(--peach);
   --color-butter: var(--butter);
+  --font-brand: var(--font-bahar), var(--font-vazir), Tahoma, sans-serif;
   --font-sans: var(--font-vazir), Tahoma, sans-serif;
 }
 
@@ -153,6 +154,36 @@ button.chip[aria-pressed="true"] { background: var(--brand); border-color: var(-
 
 .section-title { font-size: 1.5rem; font-weight: 800; line-height: 1.5; }
 @media (min-width: 640px) { .section-title { font-size: 1.85rem; } }
+
+/* ───────── Landing hero ───────── */
+.hero { background: radial-gradient(120% 80% at 50% 0%, var(--sunken), var(--paper) 70%); }
+.hero-brand {
+  font-family: var(--font-brand);
+  font-weight: 700;
+  font-size: clamp(4.5rem, 19vw, 12rem);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  display: flex; flex-wrap: wrap; justify-content: center; column-gap: .22em;
+  animation: hero-rise .9s cubic-bezier(.2,.7,.2,1) both;
+}
+.hero-lede {
+  margin-top: .5rem; max-width: 32rem; font-size: 1.15rem; line-height: 2.1; color: var(--muted); font-weight: 500;
+  animation: hero-rise 1s .15s ease both;
+}
+@media (min-width: 640px) { .hero-lede { font-size: 1.3rem; } }
+.hero-search {
+  display: flex; align-items: center; gap: .5rem; width: 100%; max-width: 34rem; padding: .4rem;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 999px;
+  box-shadow: 0 18px 50px -20px color-mix(in srgb, var(--brand) 55%, transparent);
+  animation: hero-rise 1s .25s ease both;
+}
+.hero-search:focus-within { outline: 3px solid var(--brand); outline-offset: 2px; }
+.hero-blob { position: absolute; z-index: -1; border-radius: 50%; filter: blur(2px); animation: hero-float 14s ease-in-out infinite; }
+.hero-blob-a { width: 26rem; height: 26rem; inset-block-start: -8rem; inset-inline-start: -9rem; background: var(--brand-soft); opacity: .7; }
+.hero-blob-b { width: 20rem; height: 20rem; inset-block-end: -6rem; inset-inline-end: -6rem; background: var(--lime); opacity: .35; animation-delay: -5s; }
+.hero-blob-c { width: 12rem; height: 12rem; inset-block-start: 38%; inset-inline-end: 12%; background: var(--peach); opacity: .6; animation-delay: -9s; }
+@keyframes hero-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@keyframes hero-float { 0%,100% { translate: 0 0; } 50% { translate: 0 -16px; } }
 
 /* ───────── Recipe scope: per-recipe accent applied only here ───────── */
 .recipe-scope {

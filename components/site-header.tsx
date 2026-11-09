@@ -10,7 +10,7 @@ export function SiteHeader() {
       <div className="container-page flex h-16 items-center justify-between gap-4">
         <Link href="/" className="flex items-center gap-2 text-brand" aria-label={`${BRAND} - صفحهٔ اصلی`}>
           <LogoMark />
-          <span className="text-xl font-extrabold text-ink">{BRAND}</span>
+          <span className="font-brand text-2xl text-ink">{BRAND}</span>
         </Link>
         <nav aria-label="منوی اصلی" className="hidden items-center gap-1 md:flex">
           {NAV.map((n) => (
