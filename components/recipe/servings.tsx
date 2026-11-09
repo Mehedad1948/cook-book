@@ -65,13 +65,6 @@ export function ServingsControl() {
           </button>
         </div>
       </div>
-      {servings !== base && (
-        <div className="mt-3">
-          <button type="button" className="chip" onClick={() => set(base)}>
-            برگرد به {fa(base)} نفر
-          </button>
-        </div>
-      )}
       {advice.outOfRange && (
         <p className="mt-3 flex items-start gap-2 text-sm" role="status">
           <WarnIcon width={18} height={18} className="mt-1 shrink-0" />
