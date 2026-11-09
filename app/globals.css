@@ -222,7 +222,14 @@ button.chip[aria-pressed="true"] { background: var(--brand); border-color: var(-
   box-shadow: 0 18px 50px -20px color-mix(in srgb, var(--brand) 55%, transparent);
   animation: hero-rise 1s .25s ease both;
 }
-.hero-search:focus-within { outline: 3px solid var(--brand); outline-offset: 2px; }
+.hero-search { transition: border-color .2s ease, box-shadow .25s ease; }
+.hero-search:focus-within {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand) 28%, transparent), 0 18px 50px -20px color-mix(in srgb, var(--brand) 55%, transparent);
+}
+/* the bar draws the focus ring; the bare input inside must not add a second one */
+.hero-search input:focus,
+.hero-search input:focus-visible { outline: none; border-radius: 999px; }
 .hero-blob { position: absolute; z-index: -1; border-radius: 50%; filter: blur(2px); animation: hero-float 14s ease-in-out infinite; }
 .hero-blob-a { width: 26rem; height: 26rem; inset-block-start: -8rem; inset-inline-start: -9rem; background: var(--brand-soft); opacity: .7; }
 .hero-blob-b { width: 20rem; height: 20rem; inset-block-end: -6rem; inset-inline-end: -6rem; background: var(--lime); opacity: .35; animation-delay: -5s; }

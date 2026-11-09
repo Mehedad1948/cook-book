@@ -18,7 +18,7 @@ export function RecipeCard({ recipe: r, priority = false }: { recipe: RecipeMeta
       <div className={`tile-${tileOf(r.slug)} relative flex h-36 items-end justify-between overflow-hidden p-4 text-ink`}>
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute -top-8 -end-3 select-none text-[10rem] font-extrabold leading-none text-ink/10"
+          className="pointer-events-none absolute -top-8 -end-3 select-none font-brand text-[10rem] font-bold leading-none text-ink/10"
         >
           {r.title.charAt(0)}
         </span>
