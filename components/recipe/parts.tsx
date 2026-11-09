@@ -167,7 +167,10 @@ function IngredientsCard({ recipe: r }: { recipe: Recipe }) {
         مواد لازم
       </h2>
       <ServingsControl />
-      <ScaledIngredients slug={r.slug} groups={r.ingredients} />
+      {/* the list scrolls on its own so the header and servings control always stay in view */}
+      <div className="max-h-[50dvh] overflow-y-auto overscroll-contain lg:max-h-[calc(100dvh-26rem)] lg:min-h-48" tabIndex={0} role="region" aria-labelledby="ingredients-title">
+        <ScaledIngredients slug={r.slug} groups={r.ingredients} />
+      </div>
     </section>
   );
 }
