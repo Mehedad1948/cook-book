@@ -135,6 +135,19 @@ button.chip[aria-pressed="true"] { background: var(--brand); border-color: var(-
 .timer-btn:active { transform: scale(.96); }
 @media (prefers-color-scheme: dark) { .timer-btn { color: #130f20; } }
 
+/* timer progress: brand fill with a slow diagonal shimmer; width eases between the 1s ticks */
+.timer-fill {
+  background-color: var(--brand);
+  background-image: repeating-linear-gradient(-45deg, rgba(255,255,255,.18) 0 10px, transparent 10px 20px);
+  background-size: 28px 28px;
+  border-radius: 0 1rem 1rem 0;
+  transition: width 1s linear;
+  animation: timer-stripes 1.2s linear infinite;
+}
+[dir="rtl"] .timer-fill, :root[dir="rtl"] .timer-fill { border-radius: 1rem 0 0 1rem; }
+@keyframes timer-stripes { to { background-position: 28px 0; } }
+@media (prefers-reduced-motion: reduce) { .timer-fill { animation: none; transition: none; } }
+
 .badge-premium { background: var(--gold); color: var(--gold-ink); }
 .badge-free { background: var(--lime); color: #1f4a0c; }
 .tile-0 { background: var(--brand-soft); }

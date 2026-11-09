@@ -10,7 +10,7 @@ import { RichText } from "./rich-text";
 import { CheckIcon, ClockIcon, FlameIcon } from "./icons";
 import { TipBox } from "./tip-box";
 
-type Timer = { id: string; label: string; endsAt: number; done: boolean };
+type Timer = { id: string; label: string; startedAt: number; endsAt: number; done: boolean };
 const maxMinutes = (m: number | [number, number]) => (Array.isArray(m) ? m[1] : m);
 const mmss = (ms: number) => {
   const s = Math.max(0, Math.ceil(ms / 1000));
@@ -170,7 +170,7 @@ export function CookMode({
   const stage = stages[step];
   const startTimer = (label: string, minutes: number) => {
     unlockAudio();
-    setTimers((ts) => [...ts, { id: `${Date.now()}-${ts.length}`, label, endsAt: Date.now() + minutes * 60_000, done: false }]);
+    setTimers((ts) => [...ts, { id: `${Date.now()}-${ts.length}`, label, startedAt: Date.now(), endsAt: Date.now() + minutes * 60_000, done: false }]);
   };
 
   return (
@@ -281,10 +281,17 @@ export function CookMode({
             <li
               key={t.id}
               role={t.done ? "alert" : undefined}
-              className={`flex items-center justify-between gap-3 rounded-2xl px-4 py-2 font-bold ${t.done ? "bg-lime text-[#1f4a0c]" : "bg-ink text-paper"}`}
+              className={`relative isolate flex items-center justify-between gap-3 overflow-hidden rounded-2xl px-4 py-2.5 font-bold ${t.done ? "bg-lime text-[#1f4a0c]" : "bg-ink text-white"}`}
             >
+              {!t.done && (
+                <span
+                  aria-hidden
+                  className="timer-fill absolute inset-y-0 start-0 -z-10"
+                  style={{ width: `${Math.min(100, Math.max(0, ((now - t.startedAt) / (t.endsAt - t.startedAt)) * 100))}%` }}
+                />
+              )}
               <span>{t.label}</span>
-              <span>{t.done ? "تمام شد!" : mmss(t.endsAt - now)}</span>
+              <span className="tabular-nums">{t.done ? "تمام شد!" : mmss(t.endsAt - now)}</span>
               <button type="button" className="chip !min-h-9" onClick={() => setTimers((ts) => ts.filter((x) => x.id !== t.id))}>
                 بستن
               </button>
