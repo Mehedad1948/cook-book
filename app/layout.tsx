@@ -33,6 +33,8 @@ export const metadata: Metadata = {
     "دستور پخت غذاهای ایرانی با مقدار دقیق، حرارت و زمان، نشانهٔ آماده شدن هر مرحله و جدول اشتباه‌های رایج؛ تا بار اول درست دربیاید.",
   applicationName: BRAND,
   openGraph: { siteName: BRAND, locale: "fa_IR", type: "website" },
+  // Pre-launch: keep search engines out until the site is ready. Remove to allow indexing.
+  robots: { index: false, follow: false },
 };
 
 export const viewport: Viewport = {
