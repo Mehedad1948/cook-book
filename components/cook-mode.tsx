@@ -281,7 +281,7 @@ export function CookMode({
             <li
               key={t.id}
               role={t.done ? "alert" : undefined}
-              className={`relative isolate flex items-center justify-between gap-3 overflow-hidden rounded-2xl px-4 py-3 font-bold ${t.done ? "bg-lime text-[#1f4a0c]" : "timer-track bg-ink text-white"}`}
+              className={`relative isolate flex items-center justify-between gap-3 overflow-hidden rounded-2xl px-4 py-3 font-bold ${t.done ? "bg-lime text-[#1f4a0c]" : "bg-ink text-white"}`}
             >
               {!t.done && (
                 <span

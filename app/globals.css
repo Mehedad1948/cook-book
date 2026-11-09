@@ -135,25 +135,12 @@ button.chip[aria-pressed="true"] { background: var(--brand); border-color: var(-
 .timer-btn:active { transform: scale(.96); }
 @media (prefers-color-scheme: dark) { .timer-btn { color: #130f20; } }
 
-/* timer progress: no looping animation. A calm fill that eases forward, a round knob on the leading edge,
-   quarter marks on the track, and a warmer colour for the last minute (a state change, not motion). */
-.timer-track {
-  background-image:
-    linear-gradient(to right, transparent calc(25% - 1px), rgba(255,255,255,.16) calc(25% - 1px) calc(25% + 1px), transparent calc(25% + 1px)),
-    linear-gradient(to right, transparent calc(50% - 1px), rgba(255,255,255,.16) calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px)),
-    linear-gradient(to right, transparent calc(75% - 1px), rgba(255,255,255,.16) calc(75% - 1px) calc(75% + 1px), transparent calc(75% + 1px));
-}
+/* timer progress: a calm fill that eases forward, warmer colour for the last minute (no looping motion) */
 .timer-fill {
   background-color: var(--brand);
   transition: width 1s linear, background-color .6s ease;
 }
-.timer-fill::after {
-  content: ""; position: absolute; inset-inline-end: 4px; top: 50%; translate: 0 -50%;
-  width: 12px; height: 12px; border-radius: 999px; background: #fff;
-  border: 3px solid var(--brand); box-sizing: border-box;
-}
 .timer-fill[data-low] { background-color: #d9822b; }
-.timer-fill[data-low]::after { border-color: #d9822b; }
 @media (prefers-reduced-motion: reduce) { .timer-fill { transition: none; } }
 
 .badge-premium { background: var(--gold); color: var(--gold-ink); }
