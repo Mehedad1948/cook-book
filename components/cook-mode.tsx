@@ -17,6 +17,26 @@ const mmss = (ms: number) => {
   return `${fa(Math.floor(s / 60))}:${String(s % 60).padStart(2, "0").replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[Number(d)])}`;
 };
 
+/** A short synthesized bell (no audio file): three decaying tones, repeated (3 times by default). */
+function ringBell(ctx: AudioContext, times = 3) {
+  const t0 = ctx.currentTime;
+  for (let r = 0; r < times; r++) {
+    for (const [f, g] of [[880, 0.25], [1320, 0.12], [1760, 0.06]] as const) {
+      const o = ctx.createOscillator();
+      const v = ctx.createGain();
+      const t = t0 + r * 1.1;
+      o.type = "sine";
+      o.frequency.value = f;
+      v.gain.setValueAtTime(0, t);
+      v.gain.linearRampToValueAtTime(g, t + 0.01);
+      v.gain.exponentialRampToValueAtTime(0.001, t + 1);
+      o.connect(v).connect(ctx.destination);
+      o.start(t);
+      o.stop(t + 1.05);
+    }
+  }
+}
+
 /**
  * One stage at a time, big targets, screen stays awake, resumes where you left (per device).
  * RTL: "next" is to the LEFT (swipe left or ArrowLeft); "previous" is to the right.
@@ -39,6 +59,9 @@ export function CookMode({
   const [now, setNow] = useState(() => Date.now());
   const [showIngredients, setShowIngredients] = useState(false);
   const touchX = useRef<number | null>(null);
+  const audio = useRef<AudioContext | null>(null);
+  const rung = useRef<Set<string>>(new Set());
+  const [muted, setMuted] = useState(false);
   const key = `cook:${slug}`;
 
   // resume
@@ -55,6 +78,45 @@ export function CookMode({
       localStorage.setItem(key, String(step === last ? 0 : step));
     } catch {}
   }, [key, step, last]);
+
+  useEffect(() => {
+    try {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time restore from localStorage after mount
+      setMuted(localStorage.getItem("cook:muted") === "1");
+    } catch {}
+  }, []);
+
+  // browsers only allow sound after a user gesture, so the context is created/resumed on a click
+  const unlockAudio = () => {
+    try {
+      audio.current ??= new AudioContext();
+      void audio.current.resume();
+    } catch {}
+  };
+  const toggleMute = () => {
+    const next = !muted;
+    setMuted(next);
+    try {
+      localStorage.setItem("cook:muted", next ? "1" : "0");
+    } catch {}
+    if (!next) {
+      unlockAudio(); // the click is the gesture; play a preview so the user hears what is on
+      if (audio.current) ringBell(audio.current, 1);
+    }
+  };
+
+  // ring once for each timer that has just finished (unless muted)
+  useEffect(() => {
+    for (const t of timers) {
+      if (!t.done || rung.current.has(t.id)) continue;
+      rung.current.add(t.id);
+      if (!muted && audio.current) {
+        try {
+          ringBell(audio.current);
+        } catch {}
+      }
+    }
+  }, [timers, muted]);
 
   // keep the screen awake; re-acquire when the tab becomes visible again
   useEffect(() => {
@@ -106,8 +168,10 @@ export function CookMode({
   }, [go]);
 
   const stage = stages[step];
-  const startTimer = (label: string, minutes: number) =>
+  const startTimer = (label: string, minutes: number) => {
+    unlockAudio();
     setTimers((ts) => [...ts, { id: `${Date.now()}-${ts.length}`, label, endsAt: Date.now() + minutes * 60_000, done: false }]);
+  };
 
   return (
     <div
@@ -122,9 +186,14 @@ export function CookMode({
     >
       <div className="flex items-center justify-between gap-3">
         <Link href={`/recipes/${slug}`} className="text-sm font-bold text-brand-ink underline">← {title}</Link>
-        <button type="button" className="chip" onClick={() => setShowIngredients((v) => !v)} aria-expanded={showIngredients}>
-          مواد
-        </button>
+        <div className="flex items-center gap-2">
+          <button type="button" className="chip" onClick={toggleMute} aria-pressed={!muted} aria-label={muted ? "روشن کردن صدای تایمر" : "بی‌صدا کردن تایمر"}>
+            {muted ? "🔕 بی‌صدا" : "🔔 صدا روشن"}
+          </button>
+          <button type="button" className="chip" onClick={() => setShowIngredients((v) => !v)} aria-expanded={showIngredients}>
+            مواد
+          </button>
+        </div>
       </div>
 
       <div className="mt-3 h-2 overflow-hidden rounded-full bg-sunken" role="progressbar" aria-valuemin={0} aria-valuemax={last} aria-valuenow={step}>
