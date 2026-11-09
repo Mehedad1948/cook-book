@@ -157,8 +157,8 @@ export function CookMode({
                         {s.label && <strong>{s.label}: </strong>}
                         <RichText text={s.text} />
                         {s.minutes && (
-                          <button type="button" className="chip ms-2" onClick={() => startTimer(s.label ?? stage.title, s.minutes![1])}>
-                            <ClockIcon width={15} height={15} /> تایمر {fa(s.minutes[1])} دقیقه
+                          <button type="button" className="timer-btn ms-2" onClick={() => startTimer(s.label ?? stage.title, s.minutes![1])}>
+                            <ClockIcon width={15} height={15} /> شروع تایمر {fa(s.minutes[1])} دقیقه
                           </button>
                         )}
                       </li>
@@ -172,8 +172,8 @@ export function CookMode({
                     </span>
                   )}
                   {a.minutes !== undefined && (
-                    <button type="button" className="chip !min-h-11 text-base" onClick={() => startTimer(stage.title, maxMinutes(a.minutes!))}>
-                      <ClockIcon width={16} height={16} /> تایمر {fa(maxMinutes(a.minutes))} دقیقه
+                    <button type="button" className="timer-btn" onClick={() => startTimer(stage.title, maxMinutes(a.minutes!))}>
+                      <ClockIcon width={16} height={16} /> شروع تایمر {fa(maxMinutes(a.minutes))} دقیقه
                     </button>
                   )}
                 </div>
