@@ -46,10 +46,15 @@ export default async function Home() {
         <span className="hero-blob hero-blob-c" aria-hidden />
 
         <div className="container-page relative flex min-h-[calc(100svh-4rem)] flex-col items-center justify-center py-16 text-center">
-          <h1 className="hero-brand" aria-label={BRAND}>
-            <span className="text-brand">راز</span>
-            <span>سرآشپز</span>
-          </h1>
+          <div className="hero-title">
+            <div className="hero-flame" aria-hidden>
+              {[0, 1, 2, 3, 4, 5, 6].map((i) => <i key={i} style={{ "--i": i } as React.CSSProperties} />)}
+            </div>
+            <h1 className="hero-brand" aria-label={BRAND}>
+              <span className="text-brand">راز</span>
+              <span>سرآشپز</span>
+            </h1>
+          </div>
           <p className="hero-lede">دستور پخت‌های دقیق، <span className="font-brand text-brand text-[1.3em]">رازی</span> در میان نیست</p>
 
           <form action="/recipes" role="search" className="hero-search mt-10">

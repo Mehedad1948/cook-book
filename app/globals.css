@@ -157,6 +157,36 @@ button.chip[aria-pressed="true"] { background: var(--brand); border-color: var(-
 
 /* ───────── Landing hero ───────── */
 .hero { background: radial-gradient(120% 80% at 50% 0%, var(--sunken), var(--paper) 70%); }
+.hero-title { position: relative; }
+.hero-flame {
+  position: absolute; z-index: -1; pointer-events: none; inset-inline: 4%; bottom: 2%; height: 85%;
+  display: flex; align-items: flex-end; justify-content: space-between;
+  opacity: 0; transform: translateY(14%) scaleY(.6); transform-origin: 50% 100%;
+  transition: opacity .6s ease, transform .8s cubic-bezier(.2,.7,.2,1);
+  filter: blur(1.5px) drop-shadow(0 0 22px rgba(255,120,20,.55));
+}
+.hero-flame i {
+  display: block; width: 22%; height: 70%; margin-inline: -5%;
+  --tongue: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 140' preserveAspectRatio='none'%3E%3Cpath d='M52 0C58 30 92 52 92 92c0 28-18 48-42 48S8 120 8 92c0-20 10-30 18-44 4 14 10 20 14 20C38 40 44 20 52 0Z'/%3E%3C/svg%3E");
+  -webkit-mask: var(--tongue) center / 100% 100% no-repeat; mask: var(--tongue) center / 100% 100% no-repeat;
+  background: radial-gradient(ellipse at 50% 100%, #fff6b8 0%, #ffc233 32%, #ff6a1a 62%, #e8350f 100%);
+  transform-origin: 50% 100%;
+  animation: flame-flicker calc(.9s + var(--i) * .13s) ease-in-out infinite alternate;
+  animation-delay: calc(var(--i) * -.21s);
+}
+.hero-flame i:nth-child(1), .hero-flame i:nth-child(7) { height: 55%; }
+.hero-flame i:nth-child(2), .hero-flame i:nth-child(6) { height: 80%; }
+.hero-flame i:nth-child(3), .hero-flame i:nth-child(5) { height: 100%; }
+.hero-flame i:nth-child(4) { height: 125%; width: 24%; }
+@keyframes flame-flicker {
+  0%   { transform: scaleY(.82) scaleX(1.05) skewX(-4deg); }
+  50%  { transform: scaleY(1.04) scaleX(.92) skewX(3deg); }
+  100% { transform: scaleY(.9) scaleX(1) skewX(-2deg); }
+}
+@media (hover: hover) {
+  .hero-title:hover .hero-flame { opacity: .85; transform: none; }
+}
+@media (prefers-color-scheme: dark) { .hero-title:hover .hero-flame { opacity: .92; } }
 .hero-brand {
   font-family: var(--font-brand);
   font-weight: 700;
