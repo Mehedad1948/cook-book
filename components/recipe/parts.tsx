@@ -211,7 +211,7 @@ const ANCHORS = [
 
 export function RecipeSections({ recipe: r }: { recipe: Recipe }) {
   return (
-    <ServingsProvider base={r.facts.servings} range={servingRange(r)}>
+    <ServingsProvider slug={r.slug} base={r.facts.servings} range={servingRange(r)}>
       <nav aria-label="بخش‌های دستور" className="no-print sticky top-16 z-30 border-b border-line bg-paper/90 backdrop-blur">
         <ul className="container-page flex gap-2 overflow-x-auto py-2">
           {ANCHORS.map((a) => (

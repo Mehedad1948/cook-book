@@ -6,6 +6,8 @@ import type { Ingredient, Stage } from "@/lib/recipe/schema";
 import { cookDoneAction, cookStartAction } from "@/app/recipes/actions";
 import { HEAT_LABEL, ingredientQuantity } from "@/lib/recipe/labels";
 import { fa } from "@/lib/format";
+import { clampServings, factorOf, scaleIngredient } from "@/lib/recipe/scale";
+import { servingsKey } from "./recipe/servings";
 import { RichText } from "./rich-text";
 import { CheckIcon, ClockIcon, FlameIcon } from "./icons";
 import { TipBox } from "./tip-box";
@@ -46,6 +48,7 @@ export function CookMode({
   title,
   stages,
   ingredients,
+  servings: baseServings,
 }: {
   slug: string;
   title: string;
@@ -53,6 +56,7 @@ export function CookMode({
   ingredients: { group?: string; items: Ingredient[] }[];
   servings: number;
 }) {
+  const [servings, setServings] = useState(baseServings);
   const last = stages.length; // index === stages.length is the "done" screen
   const [step, setStep] = useState(0);
   const [timers, setTimers] = useState<Timer[]>([]);
@@ -63,6 +67,15 @@ export function CookMode({
   const rung = useRef<Set<string>>(new Set());
   const [muted, setMuted] = useState(false);
   const key = `cook:${slug}`;
+
+  // servings chosen on the recipe page (per device)
+  useEffect(() => {
+    try {
+      const n = Number(localStorage.getItem(servingsKey(slug)));
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time restore from localStorage after mount
+      if (Number.isInteger(n) && n > 0) setServings(clampServings(n));
+    } catch {}
+  }, [slug]);
 
   // resume
   useEffect(() => {
@@ -199,14 +212,14 @@ export function CookMode({
       <div className="mt-3 h-2 overflow-hidden rounded-full bg-sunken" role="progressbar" aria-valuemin={0} aria-valuemax={last} aria-valuenow={step}>
         <div className="h-full rounded-full" style={{ width: `${(step / last) * 100}%`, background: "var(--r-solid)", transition: "width .3s" }} />
       </div>
-      <p className="mt-2 text-sm text-muted">{step < last ? `مرحلهٔ ${fa(step + 1)} از ${fa(last)}` : "تمام شد"}</p>
+      <p className="mt-2 text-sm text-muted">{step < last ? `مرحلهٔ ${fa(step + 1)} از ${fa(last)} · برای ${fa(servings)} نفر` : "تمام شد"}</p>
 
       {showIngredients && (
         <section className="card mt-3 max-h-64 overflow-auto p-4 text-sm" aria-label="مواد">
           {ingredients.flatMap((g) => g.items).map((it, i) => (
             <p key={i} className="flex justify-between gap-3 border-b border-line py-1.5 last:border-0">
               <span>{it.name}</span>
-              <strong>{ingredientQuantity(it)}</strong>
+              <strong>{ingredientQuantity(scaleIngredient(it, factorOf(servings, baseServings)))}</strong>
             </p>
           ))}
         </section>

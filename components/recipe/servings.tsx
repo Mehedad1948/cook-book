@@ -21,18 +21,30 @@ export function useServings() {
   return c;
 }
 
+/** The chosen servings are remembered per device so cook mode can show and use them. */
+export const servingsKey = (slug: string) => `servings:${slug}`;
+
 export function ServingsProvider({
+  slug,
   base,
   range,
   children,
 }: {
+  slug: string;
   base: number;
   range: { min: number; max: number };
   children: ReactNode;
 }) {
   const [servings, setServings] = useState(base);
+  const set = (n: number) => {
+    const v = clampServings(n);
+    setServings(v);
+    try {
+      localStorage.setItem(servingsKey(slug), String(v));
+    } catch {}
+  };
   return (
-    <ServingsContext value={{ servings, base, range, set: (n) => setServings(clampServings(n)) }}>
+    <ServingsContext value={{ servings, base, range, set }}>
       {children}
     </ServingsContext>
   );
