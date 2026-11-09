@@ -55,7 +55,7 @@ export default async function Home() {
               <span>سرآشپز</span>
             </h1>
           </div>
-          <p className="hero-lede">دستور پخت‌های دقیق، <span className="font-brand text-brand text-[1.3em]">رازی</span> در میان نیست</p>
+          <p className="hero-lede">دستور پخت‌های دقیق، دیگر <span className="font-brand text-brand text-[1.3em]">رازی</span> در میان نیست</p>
 
           <form action="/recipes" role="search" className="hero-search mt-10">
             <label className="relative flex-1">
