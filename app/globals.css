@@ -161,8 +161,7 @@ button.chip[aria-pressed="true"] { background: var(--brand); border-color: var(-
 .hero-flame {
   position: absolute; z-index: -1; pointer-events: none; inset-inline: 4%; bottom: 2%; height: 85%;
   display: flex; align-items: flex-end; justify-content: space-between;
-  opacity: 0; transform: translateY(14%) scaleY(.6); transform-origin: 50% 100%;
-  transition: opacity .6s ease, transform .8s cubic-bezier(.2,.7,.2,1);
+  opacity: 0; transition: opacity .35s ease;
   filter: blur(1.5px) drop-shadow(0 0 22px rgba(255,120,20,.55));
 }
 .hero-flame i {
@@ -171,9 +170,11 @@ button.chip[aria-pressed="true"] { background: var(--brand); border-color: var(-
   -webkit-mask: var(--tongue) center / 100% 100% no-repeat; mask: var(--tongue) center / 100% 100% no-repeat;
   background: radial-gradient(ellipse at 50% 100%, #fff6b8 0%, #ffc233 32%, #ff6a1a 62%, #e8350f 100%);
   transform-origin: 50% 100%;
+  scale: .6 0; transition: scale .35s ease-in;
   animation: flame-flicker calc(.9s + var(--i) * .13s) ease-in-out infinite alternate;
   animation-delay: calc(var(--i) * -.21s);
 }
+.hero-flame i:nth-child(even) { background: radial-gradient(ellipse at 50% 100%, #eafcff 0%, #7fdcff 30%, #3a86ff 62%, #1c3fd9 100%); }
 .hero-flame i:nth-child(1), .hero-flame i:nth-child(7) { height: 55%; }
 .hero-flame i:nth-child(2), .hero-flame i:nth-child(6) { height: 80%; }
 .hero-flame i:nth-child(3), .hero-flame i:nth-child(5) { height: 100%; }
@@ -183,10 +184,24 @@ button.chip[aria-pressed="true"] { background: var(--brand); border-color: var(-
   50%  { transform: scaleY(1.04) scaleX(.92) skewX(3deg); }
   100% { transform: scaleY(.9) scaleX(1) skewX(-2deg); }
 }
-@media (hover: hover) {
-  .hero-title:hover .hero-flame { opacity: .85; transform: none; }
+/* ignition: flames spring up from the centre outwards with a bright flash, then settle into a flicker */
+.hero-title::before {
+  content: ""; position: absolute; z-index: -2; pointer-events: none; inset: 0 -4% -12%;
+  background: radial-gradient(ellipse 50% 50% at 50% 62%, rgba(255,140,40,.4), rgba(255,90,20,.12) 55%, transparent 100%);
+  opacity: 0; scale: .5 .3; transition: opacity .4s ease, scale .6s ease;
 }
-@media (prefers-color-scheme: dark) { .hero-title:hover .hero-flame { opacity: .92; } }
+@media (hover: hover) {
+  .hero-title:hover::before { opacity: 1; scale: 1 1; transition: opacity 1s ease .1s, scale 1.2s cubic-bezier(.2,.9,.3,1) .1s; }
+  .hero-title:hover .hero-flame { opacity: .9; animation: flame-ignite 1.1s ease-out both; }
+  .hero-title:hover .hero-flame i { scale: 1 1; transition: scale .8s cubic-bezier(.3,1.7,.5,1) calc(var(--d) * 90ms); }
+  .hero-title:hover .hero-brand { text-shadow: 0 0 40px rgba(255,150,40,.35); }
+}
+.hero-brand { transition: text-shadow .9s ease; }
+@keyframes flame-ignite {
+  0%   { filter: blur(12px) drop-shadow(0 0 70px rgba(255,210,100,1)) brightness(2); }
+  45%  { filter: blur(3px) drop-shadow(0 0 40px rgba(255,170,60,.8)) brightness(1.4); }
+  100% { filter: blur(1.5px) drop-shadow(0 0 22px rgba(255,120,20,.55)) brightness(1); }
+}
 .hero-brand {
   font-family: var(--font-brand);
   font-weight: 700;

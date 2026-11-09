@@ -48,7 +48,7 @@ export default async function Home() {
         <div className="container-page relative flex min-h-[calc(100svh-4rem)] flex-col items-center justify-center py-16 text-center">
           <div className="hero-title">
             <div className="hero-flame" aria-hidden>
-              {[0, 1, 2, 3, 4, 5, 6].map((i) => <i key={i} style={{ "--i": i } as React.CSSProperties} />)}
+              {[0, 1, 2, 3, 4, 5, 6].map((i) => <i key={i} style={{ "--i": i, "--d": Math.abs(i - 3) } as React.CSSProperties} />)}
             </div>
             <h1 className="hero-brand" aria-label={BRAND}>
               <span className="text-brand">راز</span>
