@@ -135,12 +135,13 @@ button.chip[aria-pressed="true"] { background: var(--brand); border-color: var(-
 .timer-btn:active { transform: scale(.96); }
 @media (prefers-color-scheme: dark) { .timer-btn { color: #130f20; } }
 
-/* timer progress: a calm fill that eases forward, warmer colour for the last minute (no looping motion) */
+/* timer progress: single-colour fill that eases forward, with a rounded leading end */
 .timer-fill {
   background-color: var(--brand);
-  transition: width 1s linear, background-color .6s ease;
+  border-start-end-radius: 1rem;
+  border-end-end-radius: 1rem;
+  transition: width 1s linear;
 }
-.timer-fill[data-low] { background-color: #d9822b; }
 @media (prefers-reduced-motion: reduce) { .timer-fill { transition: none; } }
 
 .badge-premium { background: var(--gold); color: var(--gold-ink); }

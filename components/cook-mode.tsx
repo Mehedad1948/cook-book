@@ -287,7 +287,6 @@ export function CookMode({
                 <span
                   aria-hidden
                   className="timer-fill absolute inset-y-0 start-0 -z-10"
-                  data-low={t.endsAt - now <= 60_000 ? "" : undefined}
                   style={{ width: `${Math.min(100, Math.max(0, ((now - t.startedAt) / (t.endsAt - t.startedAt)) * 100))}%` }}
                 />
               )}
