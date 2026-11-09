@@ -23,6 +23,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
+    color-scheme: dark;
     --paper: #130f20;
     --surface: #1e1930;
     --sunken: #191429;
