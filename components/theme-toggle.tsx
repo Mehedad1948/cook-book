@@ -4,10 +4,7 @@ const KEY = "theme";
 
 function toggle() {
   const root = document.documentElement;
-  const dark =
-    root.dataset.theme === "dark" ||
-    (!root.dataset.theme && window.matchMedia("(prefers-color-scheme: dark)").matches);
-  const next = dark ? "light" : "dark";
+  const next = root.dataset.theme === "dark" ? "light" : "dark";
   root.dataset.theme = next;
   try {
     localStorage.setItem(KEY, next);

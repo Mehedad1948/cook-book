@@ -39,10 +39,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#130f20" },
-  ],
+  themeColor: "#ffffff",
   width: "device-width",
   initialScale: 1,
 };
@@ -53,7 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}`,
+            __html: `try{var t=localStorage.getItem("theme");if(t==="dark")document.documentElement.dataset.theme=t}catch(e){}`,
           }}
         />
       </head>
