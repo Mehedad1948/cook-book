@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { HeaderAuth, LoginLink } from "./header-auth";
 import { LogoMark } from "./icons";
+import { ThemeToggle } from "./theme-toggle";
 import { BRAND, NAV } from "@/lib/site";
 
 export function SiteHeader() {
@@ -19,9 +20,12 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
-        <Suspense fallback={<LoginLink />}>
-          <HeaderAuth />
-        </Suspense>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <Suspense fallback={<LoginLink />}>
+            <HeaderAuth />
+          </Suspense>
+        </div>
       </div>
     </header>
   );

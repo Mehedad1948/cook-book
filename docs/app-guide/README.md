@@ -85,7 +85,7 @@ lib/
     load.ts                  # server-only loader, builds index
 ```
 
-Use `.ts` files (typed, comments allowed, no extra parser) validated by a **Zod** schema at build time. Content stays in git: free versioning, reviewable diffs, and the generator agent only needs to write one file. The database holds *users and money only* (section 5), never recipes. Revisit only if a non-technical editor must publish without a deploy.
+Use `.ts` files (typed, comments allowed, no extra parser) validated by a **Zod** schema at build time. Content stays in git: free versioning, reviewable diffs, and the generator agent only needs to write one file. The files are the authoring format; `npm run recipes:push` validates them and copies them into the `recipes` table, which is what the site reads (`lib/recipe/load.ts`). Next step if a non-technical editor must publish: an admin editor that writes that table directly.
 
 ### 3.2 Schema (mirrors recipe-guide section 4, field for field)
 
@@ -535,7 +535,7 @@ Phases 0–5 are built and committed. Phase 6 (growth) is waiting on owner decis
 | **Content** | Zod schema, rules validator (`npm run validate:recipes`, also run by `prebuild`), generated index (`npm run recipes:index`), two seed recipes, draft/review/published `status`, `npm run new-recipe <slug>` (always creates a draft; draft problems are warnings, never build failures). The recipe-guide now targets this `.ts` format. |
 | **Pages** | Home, catalog with name and ingredient-on-hand search, categories, recipe page, pricing, login, account, favorites, shopping list, cook mode, admin summary, About/Terms/Privacy/Refund (drafts), sitemap, robots, JSON-LD, manifest and icon. |
 | **Paywall** | `toPublic()` projections; the free recipe is fully static, the premium recipe is a partial prerender (teaser shell + a session-checked island). `lib/dal.ts` is the single authority and fails closed. |
-| **Database** | PostgreSQL via `.env` (`DATABASE_*`, never committed). SQL migrations in `db/migrations`, applied with `npm run db:migrate`. Repositories are per use case in `lib/db/*`. |
+| **Database** | PostgreSQL via `.env` (`DATABASE_*`, never committed). SQL migrations in `db/migrations`, applied with `npm run db:migrate`. Recipes are copied from `content/recipes` with `npm run recipes:push`. Repositories are per use case in `lib/db/*`. |
 | **Auth** | Phone + OTP through `SmsProvider`; only the dev `inline` provider exists (shows the code in a labelled banner). Codes are HMAC-hashed, expire in 2 minutes, single use, attempt-limited (atomic claim, max 5) and rate-limited per phone and IP. Sessions are random tokens stored as SHA-256 hashes in an `httpOnly` cookie. |
 | **Billing** | Plans in `lib/billing/plans.ts` (**test prices**), prepaid time with renewals queued back to back, `PaymentProvider` adapter with only the `fake` provider. Checkout and callback are idempotent on `authority` (row lock + unique `payment_id`); failed payments are terminal; expiry is enforced by the query. |
 | **Features** | Servings scaler (`lib/recipe/scale.ts`), checkable ingredients, favorites and "recently cooked", cook mode (wake lock, RTL swipe/keys, timers, resume), subscriber-only shopping list, admin summary (role gate in the page, not the proxy). |

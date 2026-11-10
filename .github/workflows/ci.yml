@@ -34,6 +34,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run db:migrate
+      - run: npm run recipes:push
       - run: npm run validate:recipes
       - run: npm run lint
       - run: npm run typecheck
