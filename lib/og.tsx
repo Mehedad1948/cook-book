@@ -24,6 +24,9 @@ type OgProps = {
   chips?: string[];
   accent?: string;
   soft?: string;
+  /** Top-right logo + brand name row; the home page drops it because the brand is the title. */
+  showBrand?: boolean;
+  titleSize?: number;
 };
 
 const RTL_CHARS = /[؀-ۿ]/;
@@ -67,9 +70,11 @@ export async function renderOg({
   chips = [],
   accent = "#7a58e8",
   soft = "#d3c9fb",
+  showBrand = true,
+  titleSize: titleSizeOverride,
 }: OgProps) {
   const [bahar, vazirMedium, vazirBold] = await fonts;
-  const titleSize = title.length > 28 ? 76 : title.length > 14 ? 92 : 128;
+  const titleSize = titleSizeOverride ?? (title.length > 28 ? 76 : title.length > 14 ? 92 : 128);
 
   return new ImageResponse(
     (
@@ -95,10 +100,14 @@ export async function renderOg({
         <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 14, background: accent, display: "flex" }} />
 
         {/* brand row */}
-        <div style={{ display: "flex", flexDirection: "row-reverse", alignItems: "center", gap: 18 }}>
-          <Logo size={64} color={accent} ink="#ffffff" />
-          <Text style={{ fontFamily: "Bahar", fontSize: 46, color: "#1b1530" }}>{BRAND}</Text>
-        </div>
+        {showBrand ? (
+          <div style={{ display: "flex", flexDirection: "row-reverse", alignItems: "center", gap: 18 }}>
+            <Logo size={64} color={accent} ink="#ffffff" />
+            <Text style={{ fontFamily: "Bahar", fontSize: 46, color: "#1b1530" }}>{BRAND}</Text>
+          </div>
+        ) : (
+          <div style={{ display: "flex" }} />
+        )}
 
         {/* title block */}
         <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", flex: 1, gap: 16, width: 1040 }}>

@@ -7,8 +7,9 @@ export const contentType = OG_CONTENT_TYPE;
 
 export default function Image() {
   return renderOg({
-    title: "دستور پخت‌های دقیق ایرانی",
-    eyebrow: "تا بار اول درست دربیاید",
-    chips: ["مقدار دقیق", "نشانهٔ آماده شدن", "اشتباه‌های رایج"],
+    title: BRAND,
+    subtitle: "دستور پخت‌های دقیق ایرانی",
+    showBrand: false,
+    titleSize: 168,
   });
 }
