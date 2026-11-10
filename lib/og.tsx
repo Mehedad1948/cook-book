@@ -3,6 +3,7 @@ import { ImageResponse } from "next/og";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { BRAND, BRAND_LATIN } from "@/lib/site";
+import { LOGO_ACCENT_PATHS, LOGO_ASPECT, LOGO_OUTLINE_PATH, LOGO_VIEWBOX } from "@/lib/logo";
 import { shapeArabic } from "@/lib/og-shape";
 
 export const OG_SIZE = { width: 1200, height: 630 };
@@ -48,16 +49,13 @@ function Text({ children, style }: { children: string; style: React.CSSPropertie
   );
 }
 
-function Logo({ size, color, ink }: { size: number; color: string; ink: string }) {
+function Logo({ height, color, ink }: { height: number; color: string; ink: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 64 64">
-      <rect width="64" height="64" rx="16" fill={color} />
-      <g transform="translate(8 8) scale(1.5)">
-        <path d="M9 12.5a4.5 4.5 0 0 1 2-8.6 5.5 5.5 0 0 1 10 0 4.5 4.5 0 0 1 2 8.6V22H9v-9.5Z" fill={ink} />
-        <rect x="9" y="23.5" width="14" height="4" rx="1.5" fill={ink} opacity=".6" />
-        <circle cx="16" cy="14.5" r="2" fill={color} />
-        <path d="M15.2 16h1.6l.5 4h-2.6l.5-4Z" fill={color} />
-      </g>
+    <svg width={Math.round(height * LOGO_ASPECT)} height={height} viewBox={LOGO_VIEWBOX}>
+      {LOGO_ACCENT_PATHS.map((d, i) => (
+        <path key={i} d={d} fill={color} />
+      ))}
+      <path d={LOGO_OUTLINE_PATH} fill={ink} />
     </svg>
   );
 }
@@ -102,7 +100,7 @@ export async function renderOg({
         {/* brand row */}
         {showBrand ? (
           <div style={{ display: "flex", flexDirection: "row-reverse", alignItems: "center", gap: 18 }}>
-            <Logo size={64} color={accent} ink="#ffffff" />
+            <Logo height={64} color={accent} ink="#1b1530" />
             <Text style={{ fontFamily: "Bahar", fontSize: 46, color: "#1b1530" }}>{BRAND}</Text>
           </div>
         ) : (

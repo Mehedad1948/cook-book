@@ -1,4 +1,5 @@
 import type { SVGProps } from "react";
+import { LOGO_ACCENT_PATHS, LOGO_ASPECT, LOGO_OUTLINE_PATH, LOGO_VIEWBOX } from "@/lib/logo";
 
 /** Small inline icon set. Directional icons carry `rtl-flip` where they point along the reading direction. */
 type P = SVGProps<SVGSVGElement>;
@@ -74,14 +75,14 @@ export const PlayIcon = (p: P) => (
   <svg {...base(p)}><path d="M7 4.5v15l12-7.500L7 4.500Z" /></svg>
 );
 
-/** Brand mark: a chef's hat with a small keyhole ("secret"). */
+/** Brand mark: the chef's hat logo. The outline follows the text color so it stays visible in dark mode. */
 export function LogoMark(p: P) {
   return (
-    <svg width={32} height={32} viewBox="0 0 32 32" aria-hidden="true" {...p}>
-      <path d="M9 12.5a4.5 4.5 0 0 1 2-8.6 5.5 5.5 0 0 1 10 0 4.5 4.5 0 0 1 2 8.6V22H9v-9.5Z" fill="currentColor" />
-      <rect x="9" y="23.5" width="14" height="4" rx="1.5" fill="currentColor" opacity=".55" />
-      <circle cx="16" cy="14.5" r="2" fill="var(--paper)" />
-      <path d="M15.2 16h1.6l.5 4h-2.6l.5-4Z" fill="var(--paper)" />
+    <svg height={30} viewBox={LOGO_VIEWBOX} aria-hidden="true" style={{ aspectRatio: LOGO_ASPECT }} {...p}>
+      {LOGO_ACCENT_PATHS.map((d, i) => (
+        <path key={i} d={d} fill="var(--brand)" />
+      ))}
+      <path d={LOGO_OUTLINE_PATH} fill="var(--ink)" />
     </svg>
   );
 }
